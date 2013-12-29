@@ -1,0 +1,17 @@
+{
+    "name": "qmaker/linq_php",
+    "description": "LINQ from C# to php",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Vladimir Schmidt",
+            "email": "me@vlschmidt.com"
+        }
+    ],
+    "require": {
+        "phpunit/phpunit": "3.7.28"
+    },
+    "autoload": {
+        "psr-0": { "Qmaker\\": "lib/" }
+    }
+}
