@@ -1,23 +1,21 @@
 <?php
 
-namespace Qmaker\Linq\Iterators;
+namespace Qmaker\Iterators;
 
 /**
  * Class OuterIterator
  *
- * Iterate over the inner iterator, which can be specified dynamically after the iterator creation
- *
- * @package Qmaker\Linq\Iterators
+ * Iterate over the inner iterator, that can be changed in the run-time
  */
-class OuterIterator extends LazyIterator
+class VariableIterator extends LazyIterator
 {
     /**
      * @var \Iterator
      */
-    protected $iterator = null;
+    private $iterator = null;
 
     /**
-     * Set internal iterator
+     * Set inner iterator
      * @param \Iterator $iterator
      */
     public function setInnerIterator(\Iterator $iterator) {

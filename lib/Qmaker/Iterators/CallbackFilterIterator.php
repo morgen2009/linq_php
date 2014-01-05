@@ -1,27 +1,19 @@
 <?php
 
-namespace Qmaker\Linq\Iterators;
+namespace Qmaker\Iterators;
 
 /**
- * Class MultiCallbackFilterIterator
+ * Class CallbackFilterIterator
  *
- * Filter the inner iterator using multiple callback functions. Similar with \CallbackFilterIterator, but for multiple callbacks
- *
- * @package Qmaker\Linq\Iterators
+ * Filter the sequence with multiple callback functions. Similar to \CallbackFilterIterator, but for multiple callbacks
  */
-class MultiCallbackFilterIterator extends \FilterIterator
+class CallbackFilterIterator extends \FilterIterator
 {
     /**
-     * Array of filtering callback functions
+     * Array of filtering callbacks
      * @var callable[]
      */
     protected $callback;
-
-    /**
-     * Callback with multiple parameters
-     * @var bool[]
-     */
-    protected $multipleParam;
 
     /**
      * Constructor
@@ -34,7 +26,7 @@ class MultiCallbackFilterIterator extends \FilterIterator
     }
 
     /**
-     * Add filtering callback function
+     * Add filtering callback
      * @param callable $callback
      */
     public function addCallback(callable $callback) {

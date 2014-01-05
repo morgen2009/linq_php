@@ -1,6 +1,6 @@
 <?php
 
-namespace Qmaker\Linq\Iterators;
+namespace Qmaker\Iterators;
 
 interface RelationInterface
 {

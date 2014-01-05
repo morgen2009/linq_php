@@ -1,26 +1,24 @@
 <?php
 
-namespace Qmaker\Linq\Iterators;
+namespace Qmaker\Iterators;
 
 /**
  * Class ProductIterator
  *
  * Make cross-product of two or more iterators
- *
- * @package Qmaker\Linq\Iterators
  */
 class ProductIterator implements \Iterator, RelationInterface
 {
     /**
-     * Offset of the current element in the generated sequence
+     * Position of the current element
      * @var int
      */
-    private $offset;
+    private $position;
 
     /**
      * @var boolean
      */
-    private $eos;
+    private $hasNext;
 
     /**
      * @var \Iterator[]
@@ -30,18 +28,18 @@ class ProductIterator implements \Iterator, RelationInterface
     /**
      * Attach iterator
      * @param \Iterator $iterator
-     * @param string $name
+     * @param string $info
      */
-    public function attachIterator(\Iterator $iterator, $name = null) {
-        if (empty($name)) {
+    public function attachIterator(\Iterator $iterator, $info = null) {
+        if (empty($info)) {
             $this->iterators[] = $iterator;
         } else {
-            $this->iterators[$name] = $iterator;
+            $this->iterators[$info] = $iterator;
         }
     }
 
     /**
-     * @see \OuterIterator::current()
+     * @see \Iterator::current
      */
     public function current()
     {
@@ -53,11 +51,11 @@ class ProductIterator implements \Iterator, RelationInterface
     }
 
     /**
-     * @see \OuterIterator::next()
+     * @see \Iterator::next
      */
     public function next()
     {
-        $this->offset++;
+        $this->position++;
 
         // shift iterators
         end($this->iterators);
@@ -72,32 +70,45 @@ class ProductIterator implements \Iterator, RelationInterface
             }
         } while (prev($this->iterators));
 
-        $this->eos = true;
+        $this->hasNext = false;
     }
 
     /**
-     * @see \OuterIterator::key()
+     * @see \Iterator::key
      */
     public function key()
     {
-        return $this->offset;
+        return $this->position;
     }
 
     /**
-     * @see \OuterIterator::valid()
+     * Get array of keys of the included iterators
+     * @return array
+     */
+    public function keys()
+    {
+        $result = [];
+        foreach ($this->iterators as $name => $iterator) {
+            $result[$name] = $iterator->key();
+        }
+        return $result;
+    }
+
+    /**
+     * @see \Iterator::valid
      */
     public function valid()
     {
-        return !$this->eos;
+        return $this->hasNext;
     }
 
     /**
-     * @see \OuterIterator::rewind()
+     * @see \Iterator::rewind
      */
     public function rewind()
     {
-        $this->eos = false;
-        $this->offset = 0;
+        $this->hasNext = true;
+        $this->position = 0;
         array_walk($this->iterators, function (\Iterator $iterator) {
             $iterator->rewind();
         });

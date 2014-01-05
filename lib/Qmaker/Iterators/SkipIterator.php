@@ -1,13 +1,11 @@
 <?php
 
-namespace Qmaker\Linq\Iterators;
+namespace Qmaker\Iterators;
 
 /**
  * Class SkipIterator
  *
- * Skip the elements from the inner iterator until the callback return false;
- *
- * @package Qmaker\Linq\Iterators
+ * Skip the elements from the sequence until the callback return false;
  */
 class SkipIterator extends \FilterIterator
 {
@@ -16,31 +14,31 @@ class SkipIterator extends \FilterIterator
      * @param mixed $value
      * @return bool
      */
-    protected $expression;
+    protected $predicate;
 
     /**
      * Constructor
      * @param \Iterator $iterator
-     * @param callable $expression
+     * @param callable $predicate
      */
-    public function __construct(\Iterator $iterator, callable $expression) {
+    public function __construct(\Iterator $iterator, callable $predicate) {
         parent::__construct($iterator);
-        $this->expression = $expression;
+        $this->predicate = $predicate;
     }
 
     /**
-     * @see \FilterIterator::accept()
+     * @see \FilterIterator::accept
      */
     public function accept() {
         return true;
     }
 
     /**
-     * @see \Iterator::rewind()
+     * @see \Iterator::rewind
      */
     public function rewind() {
         parent::rewind();
-        while (call_user_func($this->expression, $this->current(), $this)) {
+        while (call_user_func($this->predicate, $this->current(), $this)) {
             $this->next();
         }
     }

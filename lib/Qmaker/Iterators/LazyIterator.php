@@ -1,15 +1,11 @@
 <?php
 
-namespace Qmaker\Linq\Iterators;
-
-use Iterator;
+namespace Qmaker\Iterators;
 
 /**
  * Class LazyIterator
  *
- * Iterate over iterator, which will be built when the first element is fetched
- *
- * @package Qmaker\Linq\Iterators
+ * Build the iterator, when the first element is accessed
  */
 abstract class LazyIterator implements \OuterIterator
 {
@@ -19,7 +15,7 @@ abstract class LazyIterator implements \OuterIterator
     private $iterator = null;
 
     /**
-     * @see \Iterator::current()
+     * @see \Iterator::current
      */
     public function current()
     {
@@ -27,7 +23,7 @@ abstract class LazyIterator implements \OuterIterator
     }
 
     /**
-     * @see \Iterator::next()
+     * @see \Iterator::next
      */
     public function next()
     {
@@ -35,7 +31,7 @@ abstract class LazyIterator implements \OuterIterator
     }
 
     /**
-     * @see \Iterator::key()
+     * @see \Iterator::key
      */
     public function key()
     {
@@ -43,7 +39,7 @@ abstract class LazyIterator implements \OuterIterator
     }
 
     /**
-     * @see \Iterator::valid()
+     * @see \Iterator::valid
      */
     public function valid()
     {
@@ -51,7 +47,7 @@ abstract class LazyIterator implements \OuterIterator
     }
 
     /**
-     * @see \Iterator::rewind()
+     * @see \Iterator::rewind
      */
     public function rewind()
     {
@@ -65,7 +61,7 @@ abstract class LazyIterator implements \OuterIterator
     abstract protected function build();
 
     /**
-     * @see \OuterIterator::getInnenIterator()
+     * @see \OuterIterator::getInnenIterator
      */
     public function getInnerIterator()
     {

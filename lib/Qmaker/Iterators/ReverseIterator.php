@@ -1,21 +1,21 @@
 <?php
 
-namespace Qmaker\Linq\Iterators;
+namespace Qmaker\Iterators;
 
 /**
  * Class ReverseIterator
  *
- * Reverse the order within the inner iterator
- *
- * @package Qmaker\Linq\Iterators
+ * Reverse the order in the sequence
  */
 class ReverseIterator extends LazyIterator implements RelationInterface
 {
-    /** @var \Iterator */
+    /**
+     * @var \Iterator
+     */
     protected $iterator = null;
 
     /**
-     * Set internal iterator
+     * Constructor
      * @param \Iterator $iterator
      */
     public function __construct(\Iterator $iterator) {
@@ -23,7 +23,7 @@ class ReverseIterator extends LazyIterator implements RelationInterface
     }
 
     /**
-     * @see LazyIterator::build()
+     * @see LazyIterator::build
      */
     protected function build() {
         $data = array_reverse(iterator_to_array($this->iterator));
