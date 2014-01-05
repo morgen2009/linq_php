@@ -10,7 +10,8 @@ class IntersectIterator extends ExceptIterator
     /**
      * @see \FilterIterator::accept
      */
-    public function accept() {
+    public function accept()
+    {
         $this->key = call_user_func($this->keyExtractor, $this->current(), $this);
 
         if ($this->set->offsetExists($this->key)) {

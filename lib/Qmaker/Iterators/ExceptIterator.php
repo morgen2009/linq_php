@@ -10,7 +10,7 @@ class ExceptIterator extends DistinctIterator
     /**
      * @var \Iterator
      */
-    private $iteratorSub;
+    protected $iteratorSub;
 
     /**
      * Constructor
@@ -18,7 +18,8 @@ class ExceptIterator extends DistinctIterator
      * @param \Iterator $iteratorSub
      * @param callable $keyExtractor
      */
-    public function __construct(\Iterator $iterator, \Iterator $iteratorSub, callable $keyExtractor) {
+    public function __construct(\Iterator $iterator, \Iterator $iteratorSub, callable $keyExtractor)
+    {
         parent::__construct($iterator, $keyExtractor);
         $this->iteratorSub = $iteratorSub;
     }
@@ -28,13 +29,14 @@ class ExceptIterator extends DistinctIterator
      */
     public function rewind()
     {
-        parent::rewind();
         $this->set->clear();
+        $this->iteratorSub->rewind();
+        while ($this->iteratorSub->valid()) {
+            $key = call_user_func($this->keyExtractor, $this->iteratorSub->current(), $this->iteratorSub);
+            $this->set->offsetSet($key);
+            $this->iteratorSub->next();
+        }
 
-        $self = $this;
-        iterator_apply($this->iteratorSub, function ($value) use ($self) {
-            $key = call_user_func($self->keyExtractor, $value, $self->iteratorSub);
-            $self->set->offsetSet($key);
-        });
+        parent::rewind();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Qmaker\Iterators;
 
-class TestLimitIterator extends \PHPUnit_Framework_TestCase {
+class LimitIteratorTest extends \PHPUnit_Framework_TestCase {
     /**
      * @skiped
      */

@@ -81,7 +81,7 @@ class CallbackIterator implements \Iterator
     {
         $this->position++;
         try {
-            $this->value = call_user_func($this->iteration);
+            $this->value = call_user_func($this->iteration, $this);
         } catch (\OutOfBoundsException $e) {
             $this->iteration = null;
         }
@@ -110,6 +110,6 @@ class CallbackIterator implements \Iterator
     {
         $this->position = 0;
         $this->iteration = call_user_func($this->factory);
-        $this->value = call_user_func($this->iteration);
+        $this->value = call_user_func($this->iteration, $this);
     }
 }

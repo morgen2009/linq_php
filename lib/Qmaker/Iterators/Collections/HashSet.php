@@ -7,7 +7,7 @@ class HashSet extends Dictionary {
     /**
      * Constants
      */
-    const VALUE_EXISTS = null;
+    static protected $VALUE_EXISTS = 1;
 
     /**
      * @see \ArrayAccess::offsetGet
@@ -26,7 +26,7 @@ class HashSet extends Dictionary {
 
         if ($value) {
             if ($offset === $key) {
-                $this->items[$offset] = &self::VALUE_EXISTS;
+                $this->items[$offset] = &self::$VALUE_EXISTS;
             } else {
                 $this->items[$offset] = $key;
             }
@@ -41,7 +41,7 @@ class HashSet extends Dictionary {
     public function current()
     {
         $current = current($this->items);
-        return $current === self::VALUE_EXISTS ? key($this->items) : $current;
+        return $current === self::$VALUE_EXISTS ? key($this->items) : $current;
     }
 
     /**

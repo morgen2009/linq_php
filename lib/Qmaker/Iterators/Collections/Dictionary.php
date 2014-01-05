@@ -38,7 +38,7 @@ class Dictionary implements \Iterator, \ArrayAccess, \Countable {
     public function offsetExists($key)
     {
         $offset = $this->convertKeyToOffset($key);
-        return isset($this->items[$offset]);
+        return isset($this->items[$offset]) || array_key_exists($offset, $this->items);
     }
 
     /**
