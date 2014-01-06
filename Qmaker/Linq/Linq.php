@@ -2,109 +2,98 @@
 
 namespace Qmaker\Linq;
 
-class Linq
+use Qmaker\Iterators\CallbackIterator;
+
+class Linq implements IEnumerable
 {
     /**
-     * @var array
+     * @var callable
      */
-    static protected $extensions = [];
+    protected $init;
 
     /**
-     * @param mixed $expression Expression to compute iterator for LinqExpression
-     * @return LinqExpression
+     * @var IEnumerable[]
      */
-    public static function exp($expression = '')
-    {
-        $object = new LinqExpression($expression);
-        return $object;
+    protected $parent;
+
+    /**
+     * Constructor
+     * @param callable $init
+     * @param IEnumerable[] $parent
+     */
+    protected function __construct(callable $init, array $parent = null) {
+        $this->parent = empty($parent) ? [] : $parent;
+        $this->init = $init;
     }
 
     /**
-     * @param array|\Iterator|callable|string $source
-     * @return LinqExecute
-     * @see \Qmaker\Linq\Operation\Generation::from
+     * @see \IteratorAggregate::getIterator
      */
-    public static function from($source) {
-        $linq = new LinqExecute();
-        return $linq->from($source);
+    public function getIterator() {
+        $parent = array_map(function (IEnumerable $item) {
+            return $item->getIterator();
+        }, $this->parent);
+
+        return call_user_func_array($this->init, $parent);
+    }
+
+    public function toArray() {
+        return iterator_to_array($this->getIterator());
     }
 
     /**
-     * @param int $start
-     * @param int $count
-     * @return LinqExecute
      * @see \Qmaker\Linq\Operation\Generation::range
      */
-    public static function range($start, $count) {
-        $linq = new LinqExecute();
-        return $linq->range($start, $count);
+    static function range($start, $count)
+    {
+        return Linq::from(function () use ($start, $count) {
+            $current = $start;
+            $max = $start + $count;
+            return function () use (&$current, $max) {
+                if ($current >= $max) {
+                    throw new \OutOfBoundsException();
+                }
+                return $current++;
+            };
+        });
     }
 
     /**
-     * @param mixed $element
-     * @param int $count
-     * @return LinqExecute
      * @see \Qmaker\Linq\Operation\Generation::repeat
      */
-    public static function repeat($element, $count) {
-        $linq = new LinqExecute();
-        return $linq->repeat($element, $count);
+    static function repeat($element, $count)
+    {
+        return Linq::from(function () use ($element, $count) {
+            return function (\Iterator $iterator) use ($element, $count) {
+                if ($iterator->key() >= $count) {
+                    throw new \OutOfBoundsException();
+                }
+                return $element;
+            };
+        });
     }
 
     /**
-     * Register extension
-     * @param string $name
-     * @param string $source
-     * @return bool
+     * @see \Qmaker\Linq\Operation\Generation::from
      */
-    public static function register($name, $source) {
-        // get callable
-        if (is_callable($source)) {
-            $reflection = new \ReflectionFunction($source);
-            $parameters = $reflection->getParameters();
-        } elseif (is_string($source)) {
-            $reflection = new \ReflectionClass($source);
-            if (!$reflection->hasMethod($name)) {
-                return false;
+    static function from($source)
+    {
+        return new Linq(function () use ($source) {
+            if (is_array($source)) {
+                return new \ArrayIterator($source);
+
+            } elseif (is_callable($source)) {
+                return new CallbackIterator($source);
+
+            } elseif ($source instanceof \Iterator) {
+                return $source;
+
+            } elseif ($source instanceof \IteratorAggregate) {
+                return $source->getIterator();
+
+            } else {
+                return new \ArrayIterator([$source]);
             }
-            $source = [$source, $name];
-            $parameters = $reflection->getMethod($name)->getParameters();
-        } else {
-            return false;
-        }
-
-        // check parameters of callable
-/*        if (count($parameters) != 3) {
-            return false;
-        }*/
-
-        // add callable into array
-        self::$extensions[$name] = $source;
-        return true;
-    }
-
-    /**
-     * Remove extension
-     * @param string $name
-     * @return bool
-     */
-    public static function unregister($name) {
-        if (isset(self::$extensions[$name])) {
-            unset(self::$extensions[$name]);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Get extension
-     * @param $name
-     * @return null|mixed
-     */
-    public static function getExtension($name) {
-        if (isset(self::$extensions[$name])) {
-            return self::$extensions[$name];
-        }
-        return null;
+        });
     }
 }

@@ -11,7 +11,7 @@ interface Generation
      * @param int $count The number of elements
      * @return $this
      */
-    function range($start, $count);
+    static function range($start, $count);
 
     /**
      * Generates a collection that contains one repeated value
@@ -20,7 +20,7 @@ interface Generation
      * @param int $count The number of elements
      * @return $this
      */
-    function repeat($element, $count);
+    static function repeat($element, $count);
 
     /**
      * Read collection from source
@@ -28,13 +28,5 @@ interface Generation
      * @param array|\Iterator|callable $source The input source
      * @return $this
      */
-    function from($source);
-
-    /**
-     * Change name of the stream
-     *
-     * @param string $name The name of the stream
-     * @return $this
-     */
-    function alias($name);
+    static function from($source);
 }
