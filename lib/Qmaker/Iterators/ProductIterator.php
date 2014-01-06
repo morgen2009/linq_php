@@ -74,18 +74,17 @@ class ProductIterator implements \Iterator, RelationInterface
     }
 
     /**
-     * @see \Iterator::key
+     * @return int
      */
-    public function key()
+    public function position()
     {
         return $this->position;
     }
 
     /**
-     * Get array of keys of the included iterators
-     * @return array
+     * @see \Iterator::key
      */
-    public function keys()
+    public function key()
     {
         $result = [];
         foreach ($this->iterators as $name => $iterator) {
