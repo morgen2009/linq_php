@@ -59,6 +59,7 @@ class OuterJoinIterator extends JoinIterator
         $this->iteratorA_extractKey();
 
         // find first join
+        $this->iteratorB->rewind();
         $this->validWindowB = $this->buildWindowB($this->keyCurrent);
     }
 }

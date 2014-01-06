@@ -165,5 +165,32 @@ class IteratorsTest extends \PHPUnit_Framework_TestCase {
             ['Honda', 'Low'],
         ], iterator_to_array($iterator, false));
     }
+
+    public function testOuterJoinIterator() {
+        $cars = CarExample::cars();
+        $categories = CarExample::categories();
+        unset($categories[2]);
+
+        $index = new IndexIterator(new \ArrayIterator($categories), function (Category $c) {
+            return $c->getId();
+        });
+
+        $iterator = new OuterJoinIterator(new \ArrayIterator($cars), function (Car $c) {
+            return $c->getCategory()->getId();
+        }, $index);
+
+        $iterator = new ProjectionIterator($iterator, function (array $value) {
+            return [
+                $value['left']->getTitle(),
+                empty($value['right']) ? null : $value['right']->getTitle(),
+            ];
+        });
+        $this->assertEquals([
+            ['Opel', 'Low'],
+            ['BMW', 'Middle'],
+            ['Mercedes', null],
+            ['Honda', 'Low'],
+        ], iterator_to_array($iterator, false));
+    }
 }
  

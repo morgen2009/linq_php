@@ -174,6 +174,7 @@ class JoinIterator implements \Iterator, RelationInterface
         $this->iteratorA_extractKey();
 
         // find first join
+        $this->iteratorB->rewind();
         while ($this->iteratorA->valid() && !$this->buildWindowB($this->keyCurrent)) {
             $this->iteratorA->next();
             $this->iteratorA_extractKey();
@@ -196,7 +197,6 @@ class JoinIterator implements \Iterator, RelationInterface
         }
 
         // count the elements with the same key
-        $this->iteratorB->rewind();
         $this->iteratorB->seek($offset);
         $count = 0;
         while ($this->iteratorB->valid() && ($this->iteratorB->compare($this->iteratorB->key(), $this->keyCurrent) == 0)) {
