@@ -5,6 +5,7 @@ namespace Qmaker\Iterators;
 
 use Qmaker\Fixtures\Car;
 use Qmaker\Fixtures\CarExample;
+use Qmaker\Fixtures\Category;
 
 class IteratorsTest extends \PHPUnit_Framework_TestCase {
     public function testCallbackFilterIterator() {
@@ -132,6 +133,36 @@ class IteratorsTest extends \PHPUnit_Framework_TestCase {
             ['group' => 1, 'max' => 17000, 'count' => 2],
             ['group' => 2, 'max' => 20000, 'count' => 1],
             ['group' => 3, 'max' => 30000, 'count' => 1]
+        ], iterator_to_array($iterator, false));
+    }
+
+    public function testJoinIterator() {
+        $cars = CarExample::cars();
+        $categories = CarExample::categories();
+
+        $index = new IndexIterator(new \ArrayIterator($categories), function (Category $c) {
+            return $c->getId();
+        });
+
+        $this->assertEquals([1, 2, 3], iterator_to_array(new ProjectionIterator($index, function (Category $c) {
+            return $c->getId();
+        }), false), 'IndexIterator for categories');
+
+        $iterator = new JoinIterator(new \ArrayIterator($cars), function (Car $c) {
+            return $c->getCategory()->getId();
+        }, $index);
+
+        $iterator = new ProjectionIterator($iterator, function (array $value) {
+            return [
+                $value['left']->getTitle(),
+                $value['right']->getTitle(),
+            ];
+        });
+        $this->assertEquals([
+            ['Opel', 'Low'],
+            ['BMW', 'Middle'],
+            ['Mercedes', 'High'],
+            ['Honda', 'Low'],
         ], iterator_to_array($iterator, false));
     }
 }

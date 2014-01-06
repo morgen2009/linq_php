@@ -33,7 +33,7 @@ class IndexIterator extends LazyIterator implements \SeekableIterator, RelationI
      * @param callable $keyExtractor
      * @param callable $comparator
      */
-    public function __construct(\Iterator $source, callable $keyExtractor, callable $comparator) {
+    public function __construct(\Iterator $source, callable $keyExtractor, callable $comparator = null) {
         $this->source = $source;
         $this->keyExtractor = $keyExtractor;
         $this->items = new OrderedDictionary($comparator);
@@ -43,7 +43,7 @@ class IndexIterator extends LazyIterator implements \SeekableIterator, RelationI
      * @see LazyIterator::build
      */
     protected function build() {
-        $this->items->load($this->source);
+        $this->items->load(new ProjectionIterator($this->source, $this->keyExtractor, ProjectionIterator::KEY));
         return $this->items;
     }
 

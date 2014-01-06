@@ -5,8 +5,13 @@ namespace Qmaker\Iterators;
 /**
  * Class LimitIterator
  */
-class LimitIterator extends \IteratorIterator
+class LimitIterator implements \OuterIterator
 {
+    /**
+     * @var \Iterator
+     */
+    protected $iterator;
+
     /**
      * @var int
      */
@@ -29,9 +34,74 @@ class LimitIterator extends \IteratorIterator
      * @param int $count
      */
     public function __construct(\Iterator $iterator, $offset = null, $count = null) {
-        parent::__construct($iterator);
-
+        $this->iterator = $iterator;
         $this->setLimit($offset, $count);
+    }
+
+    /**
+     * @see \Iterator::current
+     */
+    public function current()
+    {
+        return $this->iterator->current();
+    }
+
+    /**
+     * @see \Iterator::next
+     */
+    public function next()
+    {
+        $this->position++;
+        $this->iterator->next();
+    }
+
+    /**
+     * @see \Iterator::key
+     */
+    public function key()
+    {
+        return $this->iterator->key();
+    }
+
+    /**
+     * @see \Iterator::valid
+     */
+    public function valid()
+    {
+        if (!$this->iterator->valid()) {
+            return false;
+        }
+        if (!empty($this->count) && $this->position >= $this->offset + $this->count) {
+            return false;
+        };
+        return true;
+    }
+
+    /**
+     * @see \Iterator::rewind
+     */
+    public function rewind()
+    {
+        $this->position = $this->offset;
+
+        if ($this->iterator instanceof \SeekableIterator) {
+            $this->iterator->seek($this->position);
+        } else {
+            $this->iterator->rewind();
+            $rest = $this->position;
+            while ($rest > 0 && $this->iterator->valid()) {
+                $this->iterator->next();
+                $rest--;
+            }
+        }
+    }
+
+    /**
+     * @see \OuterIterator::getInnenIterator
+     */
+    public function getInnerIterator()
+    {
+        return $this->iterator;
     }
 
     /**
@@ -43,33 +113,5 @@ class LimitIterator extends \IteratorIterator
         $this->count = $count;
 
         $this->rewind();
-    }
-
-    /**
-     * @see \Iterator::valid
-     */
-    public function valid()
-    {
-        return parent::valid() && empty($this->count) ? true : $this->position < $this->offset + $this->count;
-    }
-
-    /**
-     * @see \Iterator::rewind
-     */
-    public function rewind()
-    {
-        $this->position = $this->offset;
-        $iterator = $this->getInnerIterator();
-
-        if ($iterator instanceof \SeekableIterator) {
-            $iterator->seek($this->position);
-        } else {
-            parent::rewind();
-            $rest = $this->position;
-            while ($rest > 0 && parent::valid()) {
-                parent::next();
-                $rest--;
-            }
-        }
     }
 }

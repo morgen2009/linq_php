@@ -196,14 +196,14 @@ class JoinIterator implements \Iterator, RelationInterface
         }
 
         // count the elements with the same key
+        $this->iteratorB->rewind();
         $this->iteratorB->seek($offset);
         $count = 0;
         while ($this->iteratorB->valid() && ($this->iteratorB->compare($this->iteratorB->key(), $this->keyCurrent) == 0)) {
             $this->iteratorB->next();
             $count++;
         }
-
-        $this->windowB->setLimit($offset, $count-1);
+        $this->windowB->setLimit($offset, $count);
 
         return true;
     }

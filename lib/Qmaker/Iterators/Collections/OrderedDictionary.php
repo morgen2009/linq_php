@@ -114,7 +114,7 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
      */
     public function valid()
     {
-        return $this->position <= count($this->items);
+        return $this->position < count($this->items);
     }
 
     /**
@@ -145,7 +145,7 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
      */
     public function compare($x, $y) {
         if (empty($this->comparator)) {
-            return $x > $y ? -1 : ($x < $y ? 1 : 0);
+            return $x > $y ? 1 : ($x < $y ? -1 : 0);
         } else {
             return call_user_func($this->comparator, $x, $y);
         }
@@ -182,7 +182,6 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
     public function search($key) {
         $low = 0;
         $high = count($this->items) - 1;
-
         while ($low <= $high) {
             $mid = (int)(($low + $high) / 2);
             $midVal = $this->items[$mid]->key;
@@ -209,10 +208,8 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
      */
     public function seek($position)
     {
-        if ($this->position >= 0 && $this->position < count($this->items)) {
+        if ($position >= 0 && $position < count($this->items)) {
             $this->position = $position;
-        } else {
-            throw new \OutOfBoundsException();
         }
     }
 
