@@ -22,7 +22,7 @@ class CarExample {
         $cars[] = Car::instance([ 'id' => 1, 'title' => 'Opel', 'price' => 16000, 'category' => $cat[0] ]);
         $cars[] = Car::instance([ 'id' => 2, 'title' => 'BMW', 'price' => 20000, 'category' => $cat[1] ]);
         $cars[] = Car::instance([ 'id' => 3, 'title' => 'Mercedes', 'price' => 30000, 'category' => $cat[2] ]);
-        $cars[] = Car::instance([ 'id' => 4, 'title' => 'Honda', 'price' => 16000, 'category' => $cat[0] ]);
+        $cars[] = Car::instance([ 'id' => 4, 'title' => 'Honda', 'price' => 17000, 'category' => $cat[0] ]);
 
         return $cars;
     }

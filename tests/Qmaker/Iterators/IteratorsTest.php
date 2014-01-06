@@ -3,6 +3,9 @@
 namespace Qmaker\Iterators;
 
 
+use Qmaker\Fixtures\Car;
+use Qmaker\Fixtures\CarExample;
+
 class IteratorsTest extends \PHPUnit_Framework_TestCase {
     public function testCallbackFilterIterator() {
         $data = [1, 2, 3, 4, 5];
@@ -104,6 +107,31 @@ class IteratorsTest extends \PHPUnit_Framework_TestCase {
             ['a' => 2, 'b' => 4],
             ['a' => 3, 'b' => 2],
             ['a' => 3, 'b' => 4]
+        ], iterator_to_array($iterator, false));
+    }
+
+    public function testGroupIterator() {
+        $data = CarExample::cars();
+
+        $iterator = new GroupingIterator(new \ArrayIterator($data), function (Car $car) {
+            return $car->getCategory()->getId();
+        });
+        $iterator = new ProjectionIterator($iterator, function (\Iterator $value, \Iterator $iterator) {
+            return [
+                'group' => $iterator->key(),
+                'max' => max(iterator_to_array(new ProjectionIterator($value, function (Car $car) {
+                    return $car->getPrice();
+                }))),
+                'count' => array_sum(iterator_to_array(new ProjectionIterator($value, function () {
+                    return 1;
+                })))
+            ];
+        });
+
+        $this->assertEquals([
+            ['group' => 1, 'max' => 17000, 'count' => 2],
+            ['group' => 2, 'max' => 20000, 'count' => 1],
+            ['group' => 3, 'max' => 30000, 'count' => 1]
         ], iterator_to_array($iterator, false));
     }
 }

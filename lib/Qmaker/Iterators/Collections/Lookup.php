@@ -6,6 +6,7 @@ class Lookup extends Dictionary {
 
     public function __construct()
     {
+        parent::__construct();
     }
 
     public function append($key, $value) {

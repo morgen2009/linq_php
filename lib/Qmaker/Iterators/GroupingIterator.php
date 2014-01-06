@@ -33,7 +33,7 @@ class GroupingIterator extends LazyIterator implements RelationInterface
     public function __construct(\Iterator $source, callable $keyExtractor) {
         $this->source = $source;
         $this->keyExtractor = $keyExtractor;
-        $this->lookup = new Collections\Dictionary();
+        $this->lookup = new Collections\Lookup();
     }
 
     /**
