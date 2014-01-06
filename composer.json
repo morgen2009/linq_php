@@ -12,6 +12,6 @@
         "phpunit/phpunit": "3.7.28"
     },
     "autoload": {
-        "psr-0": { "Qmaker\\": "lib/" }
+        "psr-0": { "Qmaker\\": "" }
     }
 }
