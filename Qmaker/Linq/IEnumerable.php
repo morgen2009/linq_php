@@ -3,8 +3,9 @@
 namespace Qmaker\Linq;
 
 
+use Qmaker\Linq\Operation\Filtering;
 use Qmaker\Linq\Operation\Generation;
 
-interface IEnumerable extends \IteratorAggregate, Generation {
+interface IEnumerable extends \IteratorAggregate, Generation, Filtering {
 
 }

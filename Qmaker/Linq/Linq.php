@@ -2,6 +2,7 @@
 
 namespace Qmaker\Linq;
 
+use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
 
 class Linq implements IEnumerable
@@ -38,7 +39,7 @@ class Linq implements IEnumerable
     }
 
     public function toArray() {
-        return iterator_to_array($this->getIterator());
+        return iterator_to_array($this->getIterator(), false);
     }
 
     /**
@@ -95,5 +96,40 @@ class Linq implements IEnumerable
                 return new \ArrayIterator([$source]);
             }
         });
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Filtering::ofType
+     */
+    function ofType($name)
+    {
+        if (class_exists($name, true) || trait_exists($name, true)) {
+            $predicate = function ($item) use ($name) {
+                return $item instanceof $name;
+            };
+        } elseif (function_exists('is_' . $name)) {
+            $predicate = function ($item) use ($name) {
+                return call_user_func('is_' . $name, $item);
+            };
+        } else {
+            throw new WrongTypeException($name, 'class name|trait name|type name');
+        }
+
+        return $this->where($predicate);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Filtering::where
+     */
+    function where(callable $callback)
+    {
+        return new Linq(function (\Iterator $iterator) use ($callback) {
+            if ($iterator instanceof CallbackFilterIterator) {
+                $iterator->addCallback($callback);
+                return $iterator;
+            } else {
+                return new CallbackFilterIterator($iterator, $callback);
+            }
+        }, [$this]);
     }
 }

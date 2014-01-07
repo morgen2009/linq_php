@@ -21,4 +21,18 @@ class LinqTest extends \PHPUnit_Framework_TestCase {
         $iterator = Linq::from(new \ArrayIterator([1,2,3]));
         $this->assertEquals([1,2,3], $iterator->toArray());
     }
+
+    public function testWhere()
+    {
+        $iterator = Linq::from([1,2,3,4])->where(function ($item) {
+            return $item % 2 == 0;
+        });
+        $this->assertEquals([2,4], $iterator->toArray());
+    }
+
+    public function testOfType()
+    {
+        $iterator = Linq::from([1,'a',3,4])->ofType('string');
+        $this->assertEquals(['a'], $iterator->toArray());
+    }
 }
