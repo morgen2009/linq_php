@@ -4,6 +4,9 @@ namespace Qmaker\Linq;
 
 use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
+use Qmaker\Iterators\DistinctIterator;
+use Qmaker\Iterators\ExceptIterator;
+use Qmaker\Iterators\IntersectIterator;
 use Qmaker\Iterators\ProjectionIterator;
 use Qmaker\Iterators\SkipIterator;
 use Qmaker\Iterators\TakeIterator;
@@ -218,5 +221,59 @@ class Linq implements IEnumerable
                 return $item;
             });
         }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Set::distinct
+     */
+    function distinct($expression, callable $comparator = null)
+    {
+        $expression = LambdaFactory::create($expression);
+
+        return new Linq(function (\Iterator $iterator) use ($expression) {
+            return new DistinctIterator($iterator, $expression);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Set::except
+     */
+    function except($sequence, $expression, callable $comparator = null)
+    {
+        $expression = LambdaFactory::create($expression);
+        $sequence = $this->from($sequence);
+
+        return new Linq(function (\Iterator $iterator, \Iterator $iteratorSub) use ($expression) {
+            return new ExceptIterator($iterator, $iteratorSub, $expression);
+        }, [$this, $sequence]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Set::intersect
+     */
+    function intersect($sequence, $expression, callable $comparator = null)
+    {
+        $expression = LambdaFactory::create($expression);
+        $sequence = $this->from($sequence);
+
+        return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression) {
+            return new IntersectIterator($iteratorA, $iteratorB, $expression);
+        }, [$this, $sequence]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Set::union
+     */
+    function union($sequence, $expression, callable $comparator = null)
+    {
+        $expression = LambdaFactory::create($expression);
+        $sequence = $this->from($sequence);
+
+        return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression) {
+            $iterator = new \AppendIterator();
+            $iterator->append($iteratorA);
+            $iterator->append($iteratorB);
+            return new DistinctIterator($iterator, $expression);
+        }, [$this, $sequence]);
     }
 }
