@@ -13,10 +13,11 @@ interface Partitioning
 
     /**
      * Skips elements based on a predicate function until an element does not satisfy the condition
-     * @param callable $callback
+     * @param mixed $predicate
+     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      * @return $this
      */
-    function skipWhile(callable $callback);
+    function skipWhile($predicate);
 
     /**
      * Takes elements up to a specified position in a sequence
@@ -27,8 +28,9 @@ interface Partitioning
 
     /**
      * Takes elements based on a predicate function until an element does not satisfy the condition
-     * @param callable $callback
+     * @param mixed $predicate
+     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      * @return $this
      */
-    function takeWhile(callable $callback);
+    function takeWhile($predicate);
 }

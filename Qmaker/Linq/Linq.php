@@ -4,6 +4,8 @@ namespace Qmaker\Linq;
 
 use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
+use Qmaker\Iterators\SkipIterator;
+use Qmaker\Iterators\TakeIterator;
 use Qmaker\Linq\Expression\LambdaFactory;
 
 class Linq implements IEnumerable
@@ -133,6 +135,50 @@ class Linq implements IEnumerable
             } else {
                 return new CallbackFilterIterator($iterator, $predicate);
             }
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Partitioning::skip
+     */
+    function skip($count)
+    {
+        return new Linq(function (\Iterator $iterator) use ($count) {
+            return new \LimitIterator($iterator, $count);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Partitioning::skipWhile
+     */
+    function skipWhile($predicate)
+    {
+        $predicate = LambdaFactory::create($predicate);
+
+        return new Linq(function (\Iterator $iterator) use ($predicate) {
+            return new SkipIterator($iterator, $predicate);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Partitioning::take
+     */
+    function take($count)
+    {
+        return new Linq(function (\Iterator $iterator) use ($count) {
+            return new \LimitIterator($iterator, 0, $count);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Partitioning::takeWhile
+     */
+    function takeWhile($predicate)
+    {
+        $predicate = LambdaFactory::create($predicate);
+
+        return new Linq(function (\Iterator $iterator) use ($predicate) {
+            return new TakeIterator($iterator, $predicate);
         }, [$this]);
     }
 }

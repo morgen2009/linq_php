@@ -35,4 +35,30 @@ class LinqTest extends \PHPUnit_Framework_TestCase {
         $iterator = Linq::from([1,'a',3,4])->ofType('string');
         $this->assertEquals(['a'], $iterator->toArray());
     }
+
+    public function testSkipNumeric()
+    {
+        $data = [1, 2, 3, 4, 5];
+        $iterator = Linq::from($data)->skip(2);
+        $this->assertEquals([3,4,5], $iterator->toArray());
+    }
+
+    public function testTakeNumeric()
+    {
+        $data = [1, 2, 3, 4, 5];
+        $iterator = Linq::from($data)->take(3);
+        $this->assertEquals([1,2,3], $iterator->toArray());
+    }
+
+    public function testSkipExpression() {
+        $data = [1, 2, 3, 4, 5];
+        $iterator = Linq::from($data)->skipWhile(function ($x) { return $x < 3; });
+        $this->assertEquals([3,4,5], $iterator->toArray());
+    }
+
+    public function testTakeExpression() {
+        $data = [1, 2, 3, 4, 5];
+        $iterator = Linq::from($data)->takeWhile(function ($x) { return $x < 3; });
+        $this->assertEquals([1,2], $iterator->toArray());
+    }
 }
