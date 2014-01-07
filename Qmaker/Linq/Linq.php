@@ -4,10 +4,13 @@ namespace Qmaker\Linq;
 
 use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
+use Qmaker\Iterators\Collections\DefaultComparer;
 use Qmaker\Iterators\DistinctIterator;
 use Qmaker\Iterators\ExceptIterator;
+use Qmaker\Iterators\IndexIterator;
 use Qmaker\Iterators\IntersectIterator;
 use Qmaker\Iterators\ProjectionIterator;
+use Qmaker\Iterators\ReverseIterator;
 use Qmaker\Iterators\SkipIterator;
 use Qmaker\Iterators\TakeIterator;
 use Qmaker\Linq\Expression\LambdaFactory;
@@ -18,6 +21,11 @@ class Linq implements IEnumerable
      * @var callable
      */
     protected $init;
+
+    /**
+     * @var array
+     */
+    protected $info;
 
     /**
      * @var IEnumerable[]
@@ -275,5 +283,119 @@ class Linq implements IEnumerable
             $iterator->append($iteratorB);
             return new DistinctIterator($iterator, $expression);
         }, [$this, $sequence]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Sorting::orderBy
+     */
+    function orderBy($expression, callable $comparator = null)
+    {
+        return $this->indexAdd($expression, $comparator, true);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Sorting::orderByDescending
+     */
+    function orderByDescending($expression, callable $comparator = null)
+    {
+        return $this->indexAdd($expression, $comparator, false);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Sorting::thenBy
+     */
+    function thenBy($expression, callable $comparator = null)
+    {
+        return $this->indexAdd($expression, $comparator, true);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Sorting::thenByDescending
+     */
+    function thenByDescending($expression, callable $comparator = null)
+    {
+        return $this->indexAdd($expression, $comparator, false);
+    }
+
+    /**
+     * @param mixed $expression
+     * @param callable $comparator
+     * @param boolean $ascending
+     * @return IEnumerable
+     */
+    protected function indexAdd($expression, callable $comparator = null, $ascending) {
+        if (empty($this->info) || array_key_exists('index', $this->info) === false) {
+            $self = new Linq(function () { return null; }, [$this]);
+            $self->info['index'] = true;
+            $self->init = function (\Iterator $iterator) use ($self) {
+                if (count($self->info['index_exp']) > 1) {
+                    // build key extractor
+                    $keyExtractor = LambdaFactory::create($self->info['index_exp']);
+
+                    // build comparator
+                    $info = $self->info['index_cmp'];
+                    $comparator = function ($x, $y) use ($info) {
+                        foreach ($info as $key => $comparator) {
+                            if (empty($comparator[0])) {
+                                $res = DefaultComparer::compare($x[$key], $y[$key]);
+                            } else {
+                                $res = call_user_func($comparator[0], $x[$key], $y[$key]);
+                            }
+                            if ($res != 0) {
+                                return $comparator[1] ? $res : -$res;
+                            }
+                        }
+                        return 0;
+                    };
+                } else {
+                    // build key extractor
+                    $keyExtractor = LambdaFactory::create($self->info['index_exp'][0]);
+
+                    // build comparator
+                    $info = $self->info['index_cmp'][0];
+                    $comparator = function ($x, $y) use ($info) {
+                        if (empty($info[0])) {
+                            $res = DefaultComparer::compare($x, $y);
+                        } else {
+                            $res = call_user_func($info[0], $x, $y);
+                        }
+                        if ($res != 0) {
+                            return $info[1] ? $res : -$res;
+                        }
+                        return 0;
+                    };
+                }
+                return new IndexIterator($iterator, $keyExtractor, $comparator);
+            };
+        } else {
+            $self = $this;
+        }
+
+        $self->info['index_exp'][] = $expression;
+        $self->info['index_cmp'][] = [$comparator, $ascending];
+
+        return $self;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Sorting::reverse
+     */
+    function reverse()
+    {
+        return new Linq(function (\Iterator $iterator) {
+            return new ReverseIterator($iterator);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Sorting::order
+     */
+    function order(callable $comparator = null)
+    {
+        return new Linq(function (\Iterator $iterator) use ($comparator) {
+            return new IndexIterator($iterator, function ($value) {
+                return $value;
+            }, $comparator);
+        }, [$this]);
     }
 }

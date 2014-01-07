@@ -35,7 +35,12 @@ class LambdaFactory {
         return $callback;
     }
 
-    static public function set($path = null) {
-        return null;
+    static public function set(array $items) {
+        return function ($value, \Iterator $iterator) use ($items) {
+            return array_map(function ($item) use ($value, $iterator) {
+                    return call_user_func($item, $value, $iterator);
+                },
+                $items);
+        };
     }
 }
