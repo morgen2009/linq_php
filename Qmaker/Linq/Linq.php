@@ -4,6 +4,7 @@ namespace Qmaker\Linq;
 
 use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
+use Qmaker\Iterators\ProjectionIterator;
 use Qmaker\Iterators\SkipIterator;
 use Qmaker\Iterators\TakeIterator;
 use Qmaker\Linq\Expression\LambdaFactory;
@@ -179,6 +180,43 @@ class Linq implements IEnumerable
 
         return new Linq(function (\Iterator $iterator) use ($predicate) {
             return new TakeIterator($iterator, $predicate);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Projection::select
+     */
+    function select($expression)
+    {
+        $expression = LambdaFactory::create($expression);
+
+        return new Linq(function (\Iterator $iterator) use ($expression) {
+            return new ProjectionIterator($iterator, $expression);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Projection::selectMany
+     */
+    function selectMany($expression)
+    {
+        $expression = LambdaFactory::create($expression);
+
+        return new Linq(function (\Iterator $iterator) use ($expression) {
+            return new \RecursiveIteratorIterator(new ProjectionIterator($iterator, $expression), \RecursiveIteratorIterator::CHILD_FIRST);
+        }, [$this]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Projection::cast
+     */
+    function cast($name)
+    {
+        return new Linq(function (\Iterator $iterator) use ($name) {
+            return new ProjectionIterator($iterator, function ($item) use ($name) {
+                settype($item, $name);
+                return $item;
+            });
         }, [$this]);
     }
 }
