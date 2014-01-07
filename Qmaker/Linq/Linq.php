@@ -4,6 +4,7 @@ namespace Qmaker\Linq;
 
 use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
+use Qmaker\Linq\Expression\LambdaFactory;
 
 class Linq implements IEnumerable
 {
@@ -121,14 +122,16 @@ class Linq implements IEnumerable
     /**
      * @see \Qmaker\Linq\Operation\Filtering::where
      */
-    function where(callable $callback)
+    function where($predicate)
     {
-        return new Linq(function (\Iterator $iterator) use ($callback) {
+        $predicate = LambdaFactory::create($predicate);
+
+        return new Linq(function (\Iterator $iterator) use ($predicate) {
             if ($iterator instanceof CallbackFilterIterator) {
-                $iterator->addCallback($callback);
+                $iterator->addCallback($predicate);
                 return $iterator;
             } else {
-                return new CallbackFilterIterator($iterator, $callback);
+                return new CallbackFilterIterator($iterator, $predicate);
             }
         }, [$this]);
     }

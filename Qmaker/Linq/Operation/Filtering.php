@@ -19,5 +19,5 @@ interface Filtering
      * @param callable $predicate
      * @return $this
      */
-    function where(callable $predicate);
+    function where($predicate);
 }
