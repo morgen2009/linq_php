@@ -145,7 +145,7 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
      */
     public function compare($x, $y) {
         if (empty($this->comparator)) {
-            return $x > $y ? 1 : ($x < $y ? -1 : 0);
+            return DefaultComparer::compare($x, $y);
         } else {
             return call_user_func($this->comparator, $x, $y);
         }
