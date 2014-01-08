@@ -398,4 +398,73 @@ class Linq implements IEnumerable
             }, $comparator);
         }, [$this]);
     }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Quantifier::all
+     */
+    function all($expression)
+    {
+        $expression = LambdaFactory::create($expression);
+        $result = true;
+
+        $this->each(function ($value, \Iterator $iterator) use ($expression, &$result) {
+            return $result = call_user_func($expression, $value, $iterator);
+        });
+
+        return $result;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Quantifier::any
+     */
+    function any($expression)
+    {
+        $expression = LambdaFactory::create($expression);
+        $result = false;
+
+        $this->each(function ($value, \Iterator $iterator) use ($expression, &$result) {
+            return !($result = call_user_func($expression, $value, $iterator));
+        });
+
+        return $result;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Quantifier::contains
+     */
+    function contains($element, callable $comparator = null)
+    {
+        $result = false;
+
+        if (empty($comparator)) {
+            $this->each(function ($value) use ($element, &$result) {
+                return !($result = ($value == $element));
+            });
+        } else {
+            $this->each(function ($value) use ($element, $comparator, &$result) {
+                return !($result = (call_user_func($comparator, $value, $element) === 0));
+            });
+        }
+
+        return $result;
+    }
+
+    /**
+     * Apply callback to each element of the sequence
+     * @param callable $action if callback returns false, the iteration stops
+     * @return boolean false, if the iteration breaks
+     */
+    public function each(callable $action) {
+        $iterator = $this->getIterator();
+        $iterator->rewind();
+
+        while ($iterator->valid()) {
+            if (call_user_func($action, $iterator->current(), $iterator) === false) {
+                return false;
+            };
+            $iterator->next();
+        }
+
+        return true;
+    }
 }

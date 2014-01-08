@@ -6,15 +6,15 @@ interface Quantifier
 {
     /**
      * Determines whether all the elements in a sequence satisfy a condition
-     * @param callable $expression
+     * @param mixed $expression
      */
-    function all(callable $expression);
+    function all($expression);
 
     /**
      * Determines whether any elements in a sequence satisfy a condition
-     * @param callable $expression
+     * @param mixed $expression
      */
-    function any(callable $expression);
+    function any($expression);
 
     /**
      * Determines whether a sequence contains a specified element
