@@ -866,4 +866,16 @@ class Linq implements IEnumerable
 
         return true;
     }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Grouping::groupBy
+     */
+    function groupBy($expression, callable $comparator = null)
+    {
+        $expression = LambdaFactory::create($expression);
+
+        return new Linq(function (\Iterator $iterator) use ($expression) {
+            return new GroupingIterator($iterator);
+        }, [$this]);
+    }
 }
