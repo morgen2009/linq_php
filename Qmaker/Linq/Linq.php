@@ -7,8 +7,12 @@ use Qmaker\Iterators\CallbackIterator;
 use Qmaker\Iterators\Collections\DefaultComparer;
 use Qmaker\Iterators\DistinctIterator;
 use Qmaker\Iterators\ExceptIterator;
+use Qmaker\Iterators\GroupingIterator;
 use Qmaker\Iterators\IndexIterator;
 use Qmaker\Iterators\IntersectIterator;
+use Qmaker\Iterators\JoinIterator;
+use Qmaker\Iterators\OuterJoinIterator;
+use Qmaker\Iterators\ProductIterator;
 use Qmaker\Iterators\ProjectionIterator;
 use Qmaker\Iterators\ReverseIterator;
 use Qmaker\Iterators\SkipIterator;
@@ -466,5 +470,102 @@ class Linq implements IEnumerable
         }
 
         return true;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Joining::product
+     */
+    function product($source, $projector = null)
+    {
+        $source = $this->from($source);
+        $projector = empty($projector) ? null : LambdaFactory::create($projector);
+
+        return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($projector) {
+
+            if ($iteratorA instanceof ProductIterator) {
+                // merge with left iterator
+                $iterator = $iteratorA;
+                $iterator->attachIterator($iteratorB);
+            } else {
+                // create new product iterator
+                $iterator = new ProductIterator();
+                $iterator->attachIterator($iteratorA);
+                $iterator->attachIterator($iteratorB);
+            }
+
+            if (empty($projector)) {
+                return $iterator;
+            } else {
+                return new ProjectionIterator($iterator, $projector);
+            }
+        }, [$this, $source]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Joining::join
+     */
+    function join($source, $expression, $expressionInner, $projector = null, $predicate = null)
+    {
+        $source = $this->from($source);
+        $expression = LambdaFactory::create($expression);
+        $expressionInner = LambdaFactory::create($expressionInner);
+        $projector = empty($projector) ? $projector : LambdaFactory::create($projector);
+        $predicate = empty($predicate) ? $predicate : LambdaFactory::create($predicate);
+
+        return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression, $expressionInner, $projector, $predicate) {
+
+            $iteratorB = new IndexIterator($iteratorB, $expression);
+            $iterator = new JoinIterator($iteratorA, $expressionInner, $iteratorB);
+
+            if (!empty($predicate)) {
+                $iterator = new CallbackFilterIterator($iterator, $predicate);
+            }
+
+            if (empty($projector)) {
+                return $iterator;
+            } else {
+                return new ProjectionIterator($iterator, $projector);
+            }
+        }, [$this, $source]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Joining::joinOuter
+     */
+    function joinOuter($source, $expression, $expressionInner, $projector = null, $predicate = null)
+    {
+        $source = $this->from($source);
+        $expression = LambdaFactory::create($expression);
+        $expressionInner = LambdaFactory::create($expressionInner);
+        $projector = empty($projector) ? : LambdaFactory::create($projector);
+        $predicate = empty($predicate) ? : LambdaFactory::create($predicate);
+
+        return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression, $expressionInner, $projector, $predicate) {
+
+            $iteratorB = new IndexIterator($iteratorB, $expression);
+            $iterator = new OuterJoinIterator($iteratorA, $expressionInner, $iteratorB);
+
+            if (!empty($predicate)) {
+                $iterator = new CallbackFilterIterator($iterator, $predicate);
+            }
+
+            if (empty($projector)) {
+                return $iterator;
+            } else {
+                return new ProjectionIterator($iterator, $projector);
+            }
+        }, [$this, $source]);
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Joining::groupJoin
+     */
+    function groupJoin($source, $expression, $expressionInner, $projector = null, $predicate = null)
+    {
+        $self = $this->join($source, $expression, $expressionInner, $projector, $predicate);
+
+        return new Linq(function (\Iterator $iterator) {
+            return new GroupingIterator($iterator);
+        }, [$self]);
     }
 }
