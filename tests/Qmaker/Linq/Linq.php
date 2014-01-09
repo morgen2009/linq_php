@@ -69,4 +69,16 @@ class LinqTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals([1, 2, 3, 4, 'x', 'y', 'z'], $iterator->toArray());
     }
+
+    public function testEquality() {
+        $a = [1, 2, 3, 4];
+        $b = [3, 4, 2, 1];
+        $c = [4, 3, 1, 3];
+
+        $result = Linq::from($a)->isEqual($b);
+        $this->assertEquals(true, $result);
+
+        $result = Linq::from($a)->isEqual($c);
+        $this->assertEquals(false, $result);
+    }
 }

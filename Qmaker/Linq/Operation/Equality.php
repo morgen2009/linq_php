@@ -6,8 +6,8 @@ interface Equality
 {
     /**
      * Determines whether two sequences are equal by comparing elements in a pair-wise manner
-     * @param \Iterator|array $sequence
+     * @param \Iterator|array|callable|\Qmaker\Linq\IEnumerable $source
      * @param callable|null $comparator
      */
-    function isEqual($sequence, callable $comparator = null);
+    function isEqual($source, callable $comparator = null);
 }

@@ -829,4 +829,41 @@ class Linq implements IEnumerable
         }, [$this, $source]);
 
     }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Equality::isEqual
+     */
+    function isEqual($source, callable $comparator = null)
+    {
+        $source = $this->from($source)->toArray();
+        $iterator = $this->toArray();
+
+        if (count($iterator) != count($source)) {
+            return false;
+        }
+
+        if (empty($comparator)) {
+            sort($iterator);
+            sort($source);
+        } else {
+            usort($iterator, $comparator);
+            usort($source, $comparator);
+        }
+
+        $i = count($iterator)-1;
+        while ($i >= 0) {
+            if (empty($comparator)) {
+                if ($iterator[$i] != $source[$i]) {
+                    return false;
+                }
+            } else {
+                if (call_user_func($comparator, $iterator[$i], $source[$i]) != 0) {
+                    return false;
+                }
+            }
+            $i--;
+        }
+
+        return true;
+    }
 }
