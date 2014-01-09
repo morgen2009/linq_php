@@ -18,7 +18,7 @@ class GroupingIterator extends LazyIterator implements RelationInterface
      * Compute key by value
      * @var callable
      */
-    protected $keyExtractor = null;
+    protected $keyExtractor;
 
     /**
      * @var Collections\Lookup
@@ -30,7 +30,7 @@ class GroupingIterator extends LazyIterator implements RelationInterface
      * @param \Iterator $source
      * @param callable $keyExtractor
      */
-    public function __construct(\Iterator $source, callable $keyExtractor) {
+    public function __construct(\Iterator $source, callable $keyExtractor = null) {
         $this->source = $source;
         $this->keyExtractor = $keyExtractor;
         $this->lookup = new Collections\Lookup();
@@ -44,7 +44,11 @@ class GroupingIterator extends LazyIterator implements RelationInterface
 
         while ($this->source->valid()) {
             $current = $this->source->current();
-            $key = call_user_func($this->keyExtractor, $current);
+            if (empty($this->keyExtractor)) {
+                $key = $this->source->key();
+            } else {
+                $key = call_user_func($this->keyExtractor, $current, $this->source);
+            }
 
             $this->lookup->append($key, $current);
             $this->source->next();
