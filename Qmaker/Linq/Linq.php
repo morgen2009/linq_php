@@ -697,4 +697,120 @@ class Linq implements IEnumerable
 
         return $sum;
     }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::elementAt
+     */
+    function elementAt($position)
+    {
+        $i = 0;
+        foreach ($this as $item) {
+            if ($i == $position) {
+                return $item;
+            }
+            $i++;
+        }
+        throw new \OutOfRangeException();
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::elementAtOrDefault
+     */
+    function elementAtOrDefault($position, $default = null)
+    {
+        try {
+            return $this->elementAt($position);
+        } catch (\OutOfRangeException $e) {
+            return $default;
+        }
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::first
+     */
+    function first()
+    {
+        $iterator = $this->getIterator();
+        $iterator->rewind();
+        if ($iterator->valid()) {
+            return $iterator->current();
+        } else {
+            throw new \OutOfRangeException();
+        }
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::firstOrDefault
+     */
+    function firstOrDefault($default = null)
+    {
+        try {
+            return $this->first();
+        } catch (\OutOfRangeException $e) {
+            return $default;
+        }
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::last
+     */
+    function last()
+    {
+        $iterator = $this->getIterator();
+        $iterator->rewind();
+        if ($iterator->valid()) {
+            $last = null;
+            while ($iterator->valid()) {
+                $last = $iterator->current();
+                $iterator->next();
+            }
+            return $last;
+        } else {
+            throw new \OutOfRangeException();
+        }
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::lastOrDefault
+     */
+    function lastOrDefault($default = null)
+    {
+        try {
+            return $this->last();
+        } catch (\OutOfRangeException $e) {
+            return $default;
+        }
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::single
+     */
+    function single()
+    {
+        $iterator = $this->getIterator();
+        $iterator->rewind();
+        if ($iterator->valid()) {
+            $value = $iterator->current();
+            $iterator->next();
+            if ($iterator->valid()) {
+                throw new \OutOfRangeException();
+            } else {
+                return $value;
+            }
+        } else {
+            throw new \OutOfRangeException();
+        }
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Element::singleOrDefault
+     */
+    function singleOrDefault($default = null)
+    {
+        try {
+            return $this->single();
+        } catch (\OutOfRangeException $e) {
+            return $default;
+        }
+    }
 }
