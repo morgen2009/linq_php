@@ -568,4 +568,133 @@ class Linq implements IEnumerable
             return new GroupingIterator($iterator);
         }, [$self]);
     }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Aggregation::aggregate
+     */
+    function aggregate(callable $accumulate, callable $init = null)
+    {
+        $value = empty($init) ? 0 : call_user_func($init);
+        foreach ($this as $item) {
+            $value = call_user_func($accumulate, $item, $value);
+        }
+        return $value;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Aggregation::average
+     */
+    function average($expression = null)
+    {
+        $sum = 0;
+        $count = 0;
+
+        if (!empty($expression)) {
+            $expression = LambdaFactory::create($expression);
+            foreach ($this as $item) {
+                $sum += call_user_func($expression, $item);
+                $count++;
+            };
+        } else {
+            foreach ($this as $item) {
+                $sum += $item;
+                $count++;
+            };
+        }
+
+        return $count > 0 ? $sum / $count : 0;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Aggregation::count
+     */
+    function count($expression = null)
+    {
+        if (empty($expression)) {
+            return iterator_count($this);
+        } else {
+            $expression = LambdaFactory::create($expression);
+            $count = 0;
+            foreach ($this as $item) {
+                $item = call_user_func($expression, $item);
+                if (!empty($item)) {
+                    $count++;
+                }
+            };
+            return $count;
+        }
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Aggregation::max
+     */
+    function max($expression = null)
+    {
+        $max = null;
+
+        if (!empty($expression)) {
+            $expression = LambdaFactory::create($expression);
+            foreach ($this as $item) {
+                $item = call_user_func($expression, $item);
+                if (is_null($max) || $max < $item) {
+                    $max = $item;
+                }
+            };
+        } else {
+            foreach ($this as $item) {
+                if (is_null($max) || $max < $item) {
+                    $max = $item;
+                }
+            };
+        }
+
+        return $max;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Aggregation::min
+     */
+    function min($expression = null)
+    {
+        $min = null;
+
+        if (!empty($expression)) {
+            $expression = LambdaFactory::create($expression);
+            foreach ($this as $item) {
+                $item = call_user_func($expression, $item);
+                if (is_null($min) || $min > $item) {
+                    $min = $item;
+                }
+            };
+        } else {
+            foreach ($this as $item) {
+                if (is_null($min) || $min > $item) {
+                    $min = $item;
+                }
+            };
+        }
+
+        return $min;
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Aggregation::sum
+     */
+    function sum($expression = null)
+    {
+        $sum = 0;
+
+        if (!empty($expression)) {
+            $expression = LambdaFactory::create($expression);
+            foreach ($this as $item) {
+                $sum += call_user_func($expression, $item);
+            };
+        } else {
+            foreach ($this as $item) {
+                $sum += $item;
+            };
+        }
+
+        return $sum;
+    }
 }

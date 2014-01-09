@@ -16,7 +16,7 @@ interface Aggregation
      * Calculates the average value of a collection of values
      * @param mixed $expression
      * @return mixed
-     * @see \Qmaker\Linq\Expression\Exp::instanceFrom
+     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
     function average($expression = null);
 
@@ -24,7 +24,7 @@ interface Aggregation
      * Counts the elements in a collection
      * @param mixed $expression
      * @return mixed
-     * @see \Qmaker\Linq\Expression\Exp::instanceFrom
+     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
     function count($expression = null);
 
@@ -32,7 +32,7 @@ interface Aggregation
      * Determines the maximum value in a collection
      * @param mixed $expression
      * @return mixed
-     * @see \Qmaker\Linq\Expression\Exp::instanceFrom
+     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
     function max($expression = null);
 
@@ -40,15 +40,15 @@ interface Aggregation
      * Determines the minimum value in a collection
      * @param mixed $expression
      * @return mixed
-     * @see \Qmaker\Linq\Expression\Exp::instanceFrom
+     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
-    function min($expression);
+    function min($expression = null);
 
     /**
      * Calculates the sum of the values in a collection
      * @param mixed $expression
      * @return mixed
-     * @see \Qmaker\Linq\Expression\Exp::instanceFrom
+     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
-    function sum($expression);
+    function sum($expression = null);
 }
