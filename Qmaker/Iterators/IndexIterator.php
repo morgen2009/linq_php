@@ -64,6 +64,14 @@ class IndexIterator extends LazyIterator implements \SeekableIterator, RelationI
     }
 
     /**
+     * @see OrderedDictionary::searchRange
+     */
+    public function searchRange($key)
+    {
+        return $this->items->searchRange($key);
+    }
+
+    /**
      * @see OrderedDictionary::position
      */
     public function position()

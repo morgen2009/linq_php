@@ -204,6 +204,57 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
     }
 
     /**
+     * Get first and last position for the given key using binary search
+     * @param array|mixed $key
+     * @return array The position of the key in the $this->items
+     */
+    public function searchRange($key) {
+        $low = 0;
+        $high = count($this->items) - 1;
+        while ($low <= $high) {
+            $mid = (int)(($low + $high) / 2);
+            $cmp = $this->compare($this->items[$mid]->key, $key);
+            switch ($cmp) {
+                case 1: {
+                    $high = $mid - 1;
+                    break;
+                }
+                case -1: {
+                    $low = $mid + 1;
+                    break;
+                }
+                default : {
+                    // bottom boundary
+                    $high1 = $low1 = $mid;
+                    while ($low <= $high1) {
+                        $mid = (int)(($low + $high1) / 2);
+                        $cmp = $this->compare($this->items[$mid]->key, $key);
+                        if ($cmp === 0) {
+                            $high1 = $mid - 1;
+                        } else {
+                            $low = $mid + 1;
+                        }
+                    }
+
+                    // upper boundary
+                    while ($low1 <= $high) {
+                        $mid = (int)(($low1 + $high) / 2);
+                        $cmp = $this->compare($this->items[$mid]->key, $key);
+                        if ($cmp === 0) {
+                            $low1 = $mid + 1;
+                        } else {
+                            $high = $mid - 1;
+                        }
+                    }
+
+                    return [$low, $high];
+                }
+            }
+        }
+        return null;  // key not found.
+    }
+
+    /**
      * @see SeekableIterator::seek
      */
     public function seek($position)

@@ -30,13 +30,13 @@ class JoinIterator implements \Iterator, RelationInterface
      * The field name related to the value from the left iterator
      * @var string
      */
-    protected $nameA = 'left';
+    protected $nameA = 0;
 
     /**
      * The field name related to the value from the right iterator
      * @var string
      */
-    protected $nameB = 'right';
+    protected $nameB = 1;
 
     /**
      * @var LimitIterator
@@ -191,19 +191,13 @@ class JoinIterator implements \Iterator, RelationInterface
 
     protected function buildWindowB($key) {
         // find first join
-        $offset = $this->iteratorB->search($key);
-        if ($offset < 0) {
+        $offset = $this->iteratorB->searchRange($key);
+        if (empty($offset)) {
             return false;
         }
 
         // count the elements with the same key
-        $this->iteratorB->seek($offset);
-        $count = 0;
-        while ($this->iteratorB->valid() && ($this->iteratorB->compare($this->iteratorB->key(), $this->keyCurrent) == 0)) {
-            $this->iteratorB->next();
-            $count++;
-        }
-        $this->windowB->setLimit($offset, $count);
+        $this->windowB->setLimit($offset[0], $offset[1]-$offset[0]+1);
 
         return true;
     }

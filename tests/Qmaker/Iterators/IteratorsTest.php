@@ -154,8 +154,8 @@ class IteratorsTest extends \PHPUnit_Framework_TestCase {
 
         $iterator = new ProjectionIterator($iterator, function (array $value) {
             return [
-                $value['left']->getTitle(),
-                $value['right']->getTitle(),
+                $value[0]->getTitle(),
+                $value[1]->getTitle(),
             ];
         });
         $this->assertEquals([
@@ -181,8 +181,8 @@ class IteratorsTest extends \PHPUnit_Framework_TestCase {
 
         $iterator = new ProjectionIterator($iterator, function (array $value) {
             return [
-                $value['left']->getTitle(),
-                empty($value['right']) ? null : $value['right']->getTitle(),
+                $value[0]->getTitle(),
+                empty($value[1]) ? null : $value[1]->getTitle(),
             ];
         });
         $this->assertEquals([
