@@ -813,4 +813,20 @@ class Linq implements IEnumerable
             return $default;
         }
     }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Concatenation::concat
+     */
+    function concat($source)
+    {
+        $source = $this->from($source);
+
+        return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) {
+            $iterator = new \AppendIterator();
+            $iterator->append($iteratorA);
+            $iterator->append($iteratorB);
+            return $iterator;
+        }, [$this, $source]);
+
+    }
 }

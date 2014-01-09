@@ -61,4 +61,12 @@ class LinqTest extends \PHPUnit_Framework_TestCase {
         $iterator = Linq::from($data)->takeWhile(function ($x) { return $x < 3; });
         $this->assertEquals([1,2], $iterator->toArray());
     }
+
+    public function testConcat() {
+        $a = [1, 2, 3, 4];
+        $b = ['x', 'y', 'z'];
+        $iterator = Linq::from($a)->concat($b);
+
+        $this->assertEquals([1, 2, 3, 4, 'x', 'y', 'z'], $iterator->toArray());
+    }
 }

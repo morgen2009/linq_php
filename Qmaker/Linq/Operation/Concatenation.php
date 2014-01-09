@@ -6,8 +6,8 @@ interface Concatenation
 {
     /**
      * Concatenates two sequences to form one sequence
-     * @param \Iterator|array $sequence
+     * @param array|callable|\Iterator|\Qmaker\Linq\IEnumerable $source
      * @return $this
      */
-    function concat($sequence);
+    function concat($source);
 }
