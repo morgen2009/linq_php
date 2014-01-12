@@ -13,6 +13,11 @@ class ExpressionBuilder {
     protected $levels;
 
     /**
+     * @var \SplStack
+     */
+    protected $groups;
+
+    /**
      * Constructor
      */
     public function __construct() {
@@ -62,6 +67,47 @@ class ExpressionBuilder {
         return $this;
     }
 
+    /**
+     * Add opening bracket
+     * @return $this
+     */
+    public function begin() {
+        if (empty($this->groups)) {
+            $this->groups = new \SplStack();
+        }
+        $this->groups->push($this->levels);
+        $this->levels = [];
+        return $this;
+    }
+
+    /**
+     * Add closing bracket
+     * @throws \BadMethodCallException
+     * @return $this
+     */
+    public function end() {
+        if (empty($this->groups) || $this->groups->isEmpty()) {
+            throw new \BadMethodCallException('Opening bracket is missing');
+        }
+        $levels = $this->groups->pop();
+        $last = count($levels)-1;
+
+        if ($last >= 0) {
+            $this->collapse(0);
+
+            if (!empty($this->levels)) {
+                $levels[$last] = array_merge( $levels[$last], $this->_export(0) );
+                $levels[$last][1]++;
+            }
+
+            $this->levels = $levels;
+        } else {
+            $this->collapse(0);
+        }
+
+        return $this;
+    }
+
     protected function collapse($offset) {
         $i = count($this->levels)-1;
         while ($i>$offset && $i>0) {
@@ -92,10 +138,19 @@ class ExpressionBuilder {
 
     /**
      * Export expression in reverse polish notation
+     * @throws \BadMethodCallException
      * @return array
      */
     public function export()
     {
+        if (!empty($this->groups) && !$this->groups->isEmpty()) {
+            throw new \BadMethodCallException('Closing bracket is missing');
+        }
+
+        if (empty($this->levels)) {
+            throw new \BadMethodCallException('Expression is missing');
+        }
+
         $this->collapse(0);
         return $this->_export(0);
     }
