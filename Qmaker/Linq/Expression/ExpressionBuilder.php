@@ -154,4 +154,12 @@ class ExpressionBuilder {
         $this->collapse(0);
         return $this->_export(0);
     }
+
+    /**
+     * Get current value in the expression
+     * @return mixed
+     */
+    public function current() {
+        return $this->levels[count($this->levels)-1][2];
+    }
 }
