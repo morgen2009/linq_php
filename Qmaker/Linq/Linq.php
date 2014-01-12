@@ -57,8 +57,18 @@ class Linq implements IEnumerable
         return call_user_func_array($this->init, $parent);
     }
 
+    /**
+     * @see \Qmaker\Linq\IEnumerable::toArray
+     */
     public function toArray() {
         return iterator_to_array($this->getIterator(), false);
+    }
+
+    /**
+     * @see \Qmaker\Linq\IEnumerable::toList
+     */
+    public function toList() {
+        return Linq::from($this->toArray());
     }
 
     /**
@@ -454,9 +464,7 @@ class Linq implements IEnumerable
     }
 
     /**
-     * Apply callback to each element of the sequence
-     * @param callable $action if callback returns false, the iteration stops
-     * @return boolean false, if the iteration breaks
+     * @see \Qmaker\Linq\IEnumerable::each
      */
     public function each(callable $action) {
         $iterator = $this->getIterator();

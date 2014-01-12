@@ -18,5 +18,22 @@ use Qmaker\Linq\Operation\Set;
 use Qmaker\Linq\Operation\Sorting;
 
 interface IEnumerable extends \IteratorAggregate, Aggregation, Concatenation, Element, Equality, Filtering, Generation, Grouping, Joining, Partitioning, Projection, Quantifier, Set, Sorting {
+    /**
+     * Export data to array
+     * @return array
+     */
     function toArray();
+
+    /**
+     * Export data to list
+     * @return IEnumerable
+     */
+    function toList();
+
+    /**
+     * Apply callback to each element of the sequence
+     * @param callable $action if callback returns false, the iteration stops
+     * @return boolean false, if the iteration breaks
+     */
+    public function each(callable $action);
 }
