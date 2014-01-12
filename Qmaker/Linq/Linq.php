@@ -839,6 +839,27 @@ class Linq implements IEnumerable
     }
 
     /**
+     * @see \Qmaker\Linq\Operation\Concatenation::zip
+     */
+    function zip($source, callable $projector = null)
+    {
+        $source = $this->from($source);
+
+        return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($projector) {
+            $iterator = new \MultipleIterator();
+            $iterator->attachIterator($iteratorA);
+            $iterator->attachIterator($iteratorB);
+
+            if (!empty($projector)) {
+                $iterator = new ProjectionIterator($iterator, $projector);
+            }
+
+            return $iterator;
+        }, [$this, $source]);
+
+    }
+
+    /**
      * @see \Qmaker\Linq\Operation\Equality::isEqual
      */
     function isEqual($source, callable $comparator = null)
