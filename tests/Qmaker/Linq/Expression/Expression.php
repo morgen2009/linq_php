@@ -3,6 +3,7 @@
 namespace Qmaker\Linq\Expression;
 
 use Qmaker\Linq\Expression\Operation\Comparison;
+use Qmaker\Linq\Expression\Operation\Logical;
 use Qmaker\Linq\Expression\Operation\Math;
 
 class ExpressionTest extends \PHPUnit_Framework_TestCase {
@@ -29,7 +30,14 @@ class ExpressionTest extends \PHPUnit_Framework_TestCase {
 
     public function testCallable() {
         $builder = new ExpressionBuilder();
-        $builder->add(1)->add(new Comparison(Comparison::_LT_), 1)->add(function ($value) { return $value; })->add(new Comparison(Comparison::_LT_), 1)->add(2);
+        $builder
+                ->add(1)
+                    ->add(new Comparison(Comparison::_LT_), 2)
+                ->add(function ($value) { return $value; })
+            ->add(new Logical(Logical::_AND_), 1)
+                ->add(function ($value) { return $value; })
+                    ->add(new Comparison(Comparison::_LT_), 2)
+                ->add(2);
         $func = new Expression($builder->export());
         $this->assertEquals(true, $func->__invoke(1.5), '1.5');
         $this->assertEquals(false, $func->__invoke(2), '2.0');

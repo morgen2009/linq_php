@@ -27,21 +27,24 @@ class ExpressionBuilder {
     /**
      * Add element into expression
      * @param mixed $value
-     * @param $priority
+     * @param int $priority
+     * @param int $limit
      * @return $this
      */
-    public function add($value, $priority = self::DATA) {
+    public function add($value, $priority = self::DATA, $limit = self::DATA) {
         // find level with priority not over the given one
         $current = count($this->levels)-1;
         while ($current >= 0 && $this->levels[$current][0] > $priority) {
             $current--;
         }
 
+        $current1 = $current+1;
+
         // collapse underlying levels
-        if (count($this->levels) > $current + 1) {
-            $this->collapse($current+1);
-            $data = $this->_export($current+1);
-            unset($this->levels[$current+1]);
+        if (count($this->levels) > $current1) {
+            $this->collapse($current1);
+            $data = $this->_export($current1);
+            unset($this->levels[$current1]);
         } else {
             $data = [];
         }
@@ -49,15 +52,19 @@ class ExpressionBuilder {
         // add data into new or existing level
         $tryToMerge = $current >= 0 &&
             $this->levels[$current][0] == $priority &&
-            ($priority >= self::DATA || $this->levels[$current][2] == $value);
+            ($priority >= self::DATA || $this->levels[$current][3] == $value);
+
+        if ($tryToMerge) {
+            $tryToMerge = $this->levels[$current1][1] <= $this->levels[$current1][3];
+        }
 
         if (!$tryToMerge) {
-            $current++;
             if ($priority >= self::DATA) {
-                $this->levels[$current] = [$priority, 0, $value];
+                $this->levels[$current1] = [$priority, 0, $limit, $value];
             } else {
-                $this->levels[$current] = [$priority, 1, $value];
+                $this->levels[$current1] = [$priority, 1, $limit, $value];
             }
+            $current = $current1;
         }
 
         if (!empty($data)) {
@@ -127,6 +134,7 @@ class ExpressionBuilder {
         $data = $this->levels[$offset];
         $priority = array_shift($data);
         $count = array_shift($data);
+        $limit = array_shift($data);
 
         if ($priority != self::DATA) {
             $operation = array_shift($data);
@@ -160,6 +168,6 @@ class ExpressionBuilder {
      * @return mixed
      */
     public function current() {
-        return $this->levels[count($this->levels)-1][2];
+        return $this->levels[count($this->levels)-1][3];
     }
 }
