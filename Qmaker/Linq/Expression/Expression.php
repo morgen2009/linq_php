@@ -31,7 +31,7 @@ class Expression {
             }
         }
         if ($stack->count() !== 1) {
-            throw new \BadMethodCallException();
+            throw new \BadMethodCallException('Stack has more than 1 values or empty');
         }
         return $stack->pop();
     }

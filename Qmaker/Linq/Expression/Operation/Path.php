@@ -31,7 +31,7 @@ class Path implements OperationInterface
                 throw new \InvalidArgumentException("Expression {$path} does not match the pattern");
             }
         }
-        $this->path[] = $matches;
+        $this->path = array_merge($this->path, $matches);
     }
 
     /**
@@ -58,13 +58,13 @@ class Path implements OperationInterface
                 $action[] = $callback;
             }
             $this->action = $action;
-            return $value;
         } else {
             foreach ($this->action as $callback) {
                 $value = call_user_func($callback, $value);
             }
-            return $value;
         }
+
+        $stack->push($value);
     }
 
     /**

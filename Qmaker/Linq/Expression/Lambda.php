@@ -3,6 +3,23 @@
 namespace Qmaker\Linq\Expression;
 
 
+/**
+ * Class LambdaInstance
+ *
+ * @method static \Qmaker\Linq\Expression\LambdaInstance add($a, $b) '+' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance sub($a, $b) '-' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance mult($a, $b) '*' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance div($a, $b) '/' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance eq($a, $b) '==' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance ne($a, $b) '!=' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance gt($a, $b) '>' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance ge($a, $b) '>=' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance lt($a, $b) '<' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance le($a, $b) '>=' operator
+ * @method static \Qmaker\Linq\Expression\LambdaInstance _and($a, $b) logical AND
+ * @method static \Qmaker\Linq\Expression\LambdaInstance _or($a, $b) logical OR
+ * @method static \Qmaker\Linq\Expression\LambdaInstance _xor($a, $b) logical XOR
+ */
 class Lambda {
     protected function __construct()
     {
@@ -48,6 +65,17 @@ class Lambda {
 
     static public function __callStatic($name, $arguments)
     {
-        throw new \BadMethodCallException('Not implemented');
+        $result = new LambdaInstance();
+
+        $implemented = array_merge(
+            ['_and', '_or', '_xor', 'eq', 'ne', 'gt', 'ge', 'lt', 'le', 'add', 'sub', 'mult', 'div'],
+            get_class_methods($result)
+        );
+
+        if (array_search($name, $implemented) !== false || function_exists($name)) {
+            return call_user_func_array([$result, $name], $arguments);
+        }
+
+        return $result->item($name);
     }
 }

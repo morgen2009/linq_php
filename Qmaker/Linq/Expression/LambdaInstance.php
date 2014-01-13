@@ -176,7 +176,7 @@ class LambdaInstance implements LambdaInterface {
                         $arguments = func_get_args();
                         return call_user_func_array($name, $arguments);
                     });
-                    $priority = 1;
+                    $priority = 20;
                 } else {
                     return $this->item($name);
                 }
@@ -186,8 +186,13 @@ class LambdaInstance implements LambdaInterface {
         if (empty($arguments)) {
             $this->builder->add($operation, $priority);
         } else {
+            $flag = $this->builder->current() === null;
             foreach ($arguments as $item) {
-                $this->builder->add($operation, $priority);
+                if ($flag) {
+                    $flag = false;
+                } else {
+                    $this->builder->add($operation, $priority);
+                }
                 $this->builder->add($item);
             }
         }

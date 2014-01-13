@@ -55,7 +55,7 @@ class ExpressionBuilder {
             ($priority >= self::DATA || $this->levels[$current][3] == $value);
 
         if ($tryToMerge) {
-            $tryToMerge = $this->levels[$current1][1] <= $this->levels[$current1][3];
+            $tryToMerge = $this->levels[$current][1] <= $this->levels[$current][2];
         }
 
         if (!$tryToMerge) {
@@ -168,6 +168,10 @@ class ExpressionBuilder {
      * @return mixed
      */
     public function current() {
-        return $this->levels[count($this->levels)-1][3];
+        if (empty($this->levels)) {
+            return null;
+        } else {
+            return $this->levels[count($this->levels)-1][3];
+        }
     }
 }
