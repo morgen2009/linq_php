@@ -70,6 +70,14 @@ class LinqTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals([1, 2, 3, 4, 'x', 'y', 'z'], $iterator->toArray());
     }
 
+    public function testZip() {
+        $a = [1, 2, 3, 4];
+        $b = ['x', 'y', 'z'];
+        $iterator = Linq::from($a)->zip($b);
+
+        $this->assertEquals([[1, 'x'], [2, 'y'], [3, 'z']], $iterator->toArray());
+    }
+
     public function testEquality() {
         $a = [1, 2, 3, 4];
         $b = [3, 4, 2, 1];
