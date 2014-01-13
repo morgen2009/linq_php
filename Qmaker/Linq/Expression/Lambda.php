@@ -8,6 +8,10 @@ class Lambda {
     {
     }
 
+    /**
+     * @param null|string $path
+     * @return LambdaInstance
+     */
     static public function v($path = null)
     {
         $lambda = (new LambdaInstance())->v();

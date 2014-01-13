@@ -9,6 +9,23 @@ use Qmaker\Linq\Expression\Operation\Logical;
 use Qmaker\Linq\Expression\Operation\Math;
 use Qmaker\Linq\Expression\Operation\Path;
 
+/**
+ * Class LambdaInstance
+ *
+ * @method \Qmaker\Linq\Expression\LambdaInstance add($a = null) '+' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance sub($a = null) '-' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance mult($a = null) '*' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance div($a = null) '/' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance eq($a = null) '==' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance ne($a = null) '!=' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance gt($a = null) '>' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance ge($a = null) '>=' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance lt($a = null) '<' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance le($a = null) '>=' operator
+ * @method \Qmaker\Linq\Expression\LambdaInstance _and($a = null) logical AND
+ * @method \Qmaker\Linq\Expression\LambdaInstance _or($a = null) logical OR
+ * @method \Qmaker\Linq\Expression\LambdaInstance _xor($a = null) logical XOR
+ */
 class LambdaInstance implements LambdaInterface {
     /**
      * @var ExpressionBuilder
@@ -29,7 +46,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add current value into expression
-     * @return $this
+     * @return LambdaInstance
      */
     public function v() {
         $this->builder->add(function ($item, \Iterator $iterator = null) {
@@ -40,7 +57,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add iterator into expression
-     * @return $this
+     * @return LambdaInstance
      */
     public function i() {
         $this->builder->add(function ($item, \Iterator $iterator = null) {
@@ -52,7 +69,7 @@ class LambdaInstance implements LambdaInterface {
     /**
      * Add value into expression
      * @param $value
-     * @return $this
+     * @return LambdaInstance
      */
     public function c($value) {
         $this->builder->add($value);
@@ -62,10 +79,10 @@ class LambdaInstance implements LambdaInterface {
     /**
      * Add transforming operator for the current value
      * @param callable $callback
-     * @return $this
+     * @return LambdaInstance
      */
     public function call(callable $callback) {
-        $this->builder->add(new Callback($callback), 1);
+        $this->builder->add(new Callback($callback), 10);
         return $this;
     }
 
@@ -82,7 +99,7 @@ class LambdaInstance implements LambdaInterface {
      * Add transforming operator of the current value to IEnumerable
      * @param string $expression
      * @throws \BadMethodCallException
-     * @return $this
+     * @return LambdaInstance
      */
     public function math($expression) {
         throw new \BadMethodCallException('Not implemented');
@@ -92,7 +109,7 @@ class LambdaInstance implements LambdaInterface {
      * Add like comparison operator
      * @param string $expression
      * @throws \BadMethodCallException
-     * @return $this
+     * @return LambdaInstance
      */
     public function like($expression) {
         throw new \BadMethodCallException('Not implemented');
@@ -101,12 +118,12 @@ class LambdaInstance implements LambdaInterface {
     /**
      * Apply path
      * @param string $path
-     * @return $this
+     * @return LambdaInstance
      */
     public function item($path) {
         $operation = $this->builder->current();
         if (!($operation instanceof Path)) {
-            $this->builder->add(new Path(), 1);
+            $this->builder->add(new Path(), 10);
             $operation = $this->builder->current();
         }
         $operation->addPath($path);
@@ -115,7 +132,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add opening bracket
-     * @return $this
+     * @return LambdaInstance
      */
     public function begin() {
         $this->builder->begin();
@@ -124,7 +141,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add closing bracket
-     * @return $this
+     * @return LambdaInstance
      */
     public function end() {
         $this->builder->end();
@@ -135,24 +152,24 @@ class LambdaInstance implements LambdaInterface {
      * Hook for other methods
      * @param $name
      * @param $arguments
-     * @return $this
+     * @return LambdaInstance
      * @throws \BadMethodCallException
      */
     public function __call($name, $arguments) {
         switch ($name) {
-            case '_and' : $operation = new Logical(Logical::_AND_); $priority = 1; break;
+            case '_and' : $operation = new Logical(Logical::_AND_); $priority = 3; break;
             case '_or'  : $operation = new Logical(Logical::_OR_);  $priority = 1; break;
-            case '_xor' : $operation = new Logical(Logical::_XOR_); $priority = 1; break;
-            case 'eq'   : $operation = new Comparison(Comparison::_EQ_); $priority = 1; break;
-            case 'ne'   : $operation = new Comparison(Comparison::_NE_); $priority = 1; break;
-            case 'gt'   : $operation = new Comparison(Comparison::_GT_); $priority = 1; break;
-            case 'ge'   : $operation = new Comparison(Comparison::_GE_); $priority = 1; break;
-            case 'lt'   : $operation = new Comparison(Comparison::_LT_); $priority = 1; break;
-            case 'le'   : $operation = new Comparison(Comparison::_LE_); $priority = 1; break;
-            case 'add'  : $operation = new Math(Math::ADD);  $priority = 1; break;
-            case 'sub'  : $operation = new Math(Math::SUB);  $priority = 1; break;
-            case 'mult' : $operation = new Math(Math::MULT); $priority = 1; break;
-            case 'div'  : $operation = new Math(Math::DIV);  $priority = 1; break;
+            case '_xor' : $operation = new Logical(Logical::_XOR_); $priority = 2; break;
+            case 'eq'   : $operation = new Comparison(Comparison::_EQ_); $priority = 4; break;
+            case 'ne'   : $operation = new Comparison(Comparison::_NE_); $priority = 4; break;
+            case 'gt'   : $operation = new Comparison(Comparison::_GT_); $priority = 5; break;
+            case 'ge'   : $operation = new Comparison(Comparison::_GE_); $priority = 5; break;
+            case 'lt'   : $operation = new Comparison(Comparison::_LT_); $priority = 5; break;
+            case 'le'   : $operation = new Comparison(Comparison::_LE_); $priority = 5; break;
+            case 'add'  : $operation = new Math(Math::ADD);  $priority = 6; break;
+            case 'sub'  : $operation = new Math(Math::SUB);  $priority = 6; break;
+            case 'mult' : $operation = new Math(Math::MULT); $priority = 7; break;
+            case 'div'  : $operation = new Math(Math::DIV);  $priority = 7; break;
             default: {
                 if (function_exists($name)) {
                     $operation = new Callback(function () use ($name) {
