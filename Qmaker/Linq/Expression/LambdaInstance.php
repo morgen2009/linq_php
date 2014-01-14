@@ -46,7 +46,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add current value into expression
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function v() {
         $this->builder->add(function ($item, \Iterator $iterator = null) {
@@ -57,7 +57,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add iterator into expression
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function i() {
         $this->builder->add(function ($item, \Iterator $iterator = null) {
@@ -69,7 +69,7 @@ class LambdaInstance implements LambdaInterface {
     /**
      * Add value into expression
      * @param $value
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function c($value) {
         $this->builder->add($value);
@@ -78,8 +78,8 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add complex object (array) into expression
-     * @param LambdaInterface[] $value
-     * @return LambdaInstance
+     * @param (callable|LambdaInterface)[] $value
+     * @return LambdaInstance|mixed
      */
     public function complex(array $value)
     {
@@ -97,7 +97,7 @@ class LambdaInstance implements LambdaInterface {
     /**
      * Add transforming operator for the current value
      * @param callable $callback
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function call(callable $callback) {
         $this->builder->add(new Callback($callback), 10);
@@ -117,7 +117,7 @@ class LambdaInstance implements LambdaInterface {
      * Add transforming operator of the current value to IEnumerable
      * @param string $expression
      * @throws \BadMethodCallException
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function math($expression) {
         throw new \BadMethodCallException('Not implemented');
@@ -126,7 +126,7 @@ class LambdaInstance implements LambdaInterface {
     /**
      * Add like comparison operator
      * @param string $pattern
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function like($pattern) {
         $isRegexp = strstr($pattern, '%') !== false;
@@ -153,7 +153,7 @@ class LambdaInstance implements LambdaInterface {
     /**
      * Apply path
      * @param string $path
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function item($path) {
         $operation = $this->builder->current();
@@ -167,7 +167,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add opening bracket
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function begin() {
         $this->builder->begin();
@@ -176,7 +176,7 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add closing bracket
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      */
     public function end() {
         $this->builder->end();
@@ -187,7 +187,7 @@ class LambdaInstance implements LambdaInterface {
      * Hook for other methods
      * @param $name
      * @param $arguments
-     * @return LambdaInstance
+     * @return LambdaInstance|mixed
      * @throws \BadMethodCallException
      */
     public function __call($name, $arguments) {

@@ -26,8 +26,7 @@ class Lambda {
     }
 
     /**
-     * @param null|string $path
-     * @return LambdaInstance
+     * @see LambdaInstance::v
      */
     static public function v($path = null)
     {
@@ -38,11 +37,17 @@ class Lambda {
         return $lambda;
     }
 
+    /**
+     * @see LambdaInstance::i
+     */
     static public function i()
     {
         return (new LambdaInstance())->i();
     }
 
+    /**
+     * @see LambdaInstance::c
+     */
     static public function c($value)
     {
         return (new LambdaInstance())->c($value);
@@ -56,11 +61,9 @@ class Lambda {
         return (new LambdaInstance())->complex($value);
     }
 
-    static public function call(callable $callback)
-    {
-        throw new \BadMethodCallException('Not implemented');
-    }
-
+    /**
+     * @see LambdaInstance::math
+     */
     static public function math($expression)
     {
         throw new \BadMethodCallException('Not implemented');
