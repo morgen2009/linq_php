@@ -23,6 +23,7 @@ class Callback implements OperationInterface {
         $arguments = [];
         while ($count > 0) {
             $arguments[] = $stack->pop();
+            $count--;
         }
         $result = call_user_func_array($this->action, $arguments);
         $stack->push($result);

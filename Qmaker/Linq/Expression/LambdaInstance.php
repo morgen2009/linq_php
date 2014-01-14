@@ -125,12 +125,29 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add like comparison operator
-     * @param string $expression
-     * @throws \BadMethodCallException
+     * @param string $pattern
      * @return LambdaInstance
      */
-    public function like($expression) {
-        throw new \BadMethodCallException('Not implemented');
+    public function like($pattern) {
+        $isRegexp = strstr($pattern, '%') !== false;
+        if ($isRegexp) {
+            $pattern = str_replace('[', '\[', $pattern);
+            $pattern = str_replace(']', '\]', $pattern);
+            $pattern = str_replace('%', '[^.]*', $pattern);
+            $pattern = str_replace('\\', '\\\\', $pattern);
+            $pattern = '/^' . $pattern . '$/';
+
+            $callback = function ($variable) use ($pattern) {
+                $result = preg_match($pattern, $variable);
+                return $result > 0;
+            };
+        } else {
+            $callback = function ($variable) use ($pattern) {
+                return strstr($variable, $pattern) !== false;
+            };
+        }
+        $this->builder->add(new Callback($callback), 5, 2);
+        return $this;
     }
 
     /**

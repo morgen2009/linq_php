@@ -46,4 +46,13 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
         ]);
         $this->assertEquals([ 'x1'=>1.5, 'x2'=>3.0, 'x3'=>1 ], $l(1.5));
     }
+
+    public function testLike()
+    {
+        $l = Lambda::v()->like('hello');
+        $this->assertEquals(true, $l('1 hello, 1'), 'strstr');
+
+        $l = Lambda::v()->like('%hello');
+        $this->assertEquals(true, $l('ww hello'), 'regexp');
+    }
 }
