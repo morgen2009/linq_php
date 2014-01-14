@@ -77,6 +77,24 @@ class LambdaInstance implements LambdaInterface {
     }
 
     /**
+     * Add complex object (array) into expression
+     * @param LambdaInterface[] $value
+     * @return LambdaInstance
+     */
+    public function complex(array $value)
+    {
+        $this->builder->add(function () use ($value) {
+            $result = [];
+            foreach ($value as $k => $v) {
+                /** @var callable $v */
+                $result[$k] = call_user_func_array($v, func_get_args());
+            }
+            return $result;
+        });
+        return $this;
+    }
+
+    /**
      * Add transforming operator for the current value
      * @param callable $callback
      * @return LambdaInstance

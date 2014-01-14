@@ -48,9 +48,12 @@ class Lambda {
         return (new LambdaInstance())->c($value);
     }
 
-    static public function complex()
+    /**
+     * @see LambdaInstance::complex
+     */
+    static public function complex(array $value)
     {
-        throw new \BadMethodCallException('Not implemented');
+        return (new LambdaInstance())->complex($value);
     }
 
     static public function call(callable $callback)

@@ -36,5 +36,14 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
         $l = Lambda::v()->getPrice();
         $this->assertEquals(16000, $l($cars[0]));
     }
+
+    public function testComplex()
+    {
+        $l = Lambda::complex([
+            'x1' => Lambda::v(),
+            'x2' => Lambda::v()->mult(2),
+            'x3' => Lambda::c(1)
+        ]);
+        $this->assertEquals([ 'x1'=>1.5, 'x2'=>3.0, 'x3'=>1 ], $l(1.5));
+    }
 }
- 
