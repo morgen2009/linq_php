@@ -20,7 +20,7 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
 
     public function testLogicalOperation()
     {
-        $l = Lambda::_and(Lambda::v()->gt(1), Lambda::v()->lt(2))->eq(true);
+        $l = Lambda::and_(Lambda::v()->gt(1), Lambda::v()->lt(2))->eq(true);
         $this->assertEquals(true, $l(1.5));
     }
 

@@ -16,9 +16,9 @@ namespace Qmaker\Linq\Expression;
  * @method static \Qmaker\Linq\Expression\LambdaInstance ge($a, $b) '>=' operator
  * @method static \Qmaker\Linq\Expression\LambdaInstance lt($a, $b) '<' operator
  * @method static \Qmaker\Linq\Expression\LambdaInstance le($a, $b) '>=' operator
- * @method static \Qmaker\Linq\Expression\LambdaInstance _and($a, $b) logical AND
- * @method static \Qmaker\Linq\Expression\LambdaInstance _or($a, $b) logical OR
- * @method static \Qmaker\Linq\Expression\LambdaInstance _xor($a, $b) logical XOR
+ * @method static \Qmaker\Linq\Expression\LambdaInstance and_($a, $b) logical AND
+ * @method static \Qmaker\Linq\Expression\LambdaInstance or_($a, $b) logical OR
+ * @method static \Qmaker\Linq\Expression\LambdaInstance xor_($a, $b) logical XOR
  */
 class Lambda {
     protected function __construct()
@@ -71,7 +71,7 @@ class Lambda {
         $result = new LambdaInstance();
 
         $implemented = array_merge(
-            ['_and', '_or', '_xor', 'eq', 'ne', 'gt', 'ge', 'lt', 'le', 'add', 'sub', 'mult', 'div'],
+            ['and_', 'or_', 'xor_', 'eq', 'ne', 'gt', 'ge', 'lt', 'le', 'add', 'sub', 'mult', 'div'],
             get_class_methods($result)
         );
 

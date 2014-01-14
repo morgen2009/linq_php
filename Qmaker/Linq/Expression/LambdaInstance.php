@@ -22,9 +22,9 @@ use Qmaker\Linq\Expression\Operation\Path;
  * @method \Qmaker\Linq\Expression\LambdaInstance ge($a = null) '>=' operator
  * @method \Qmaker\Linq\Expression\LambdaInstance lt($a = null) '<' operator
  * @method \Qmaker\Linq\Expression\LambdaInstance le($a = null) '>=' operator
- * @method \Qmaker\Linq\Expression\LambdaInstance _and($a = null) logical AND
- * @method \Qmaker\Linq\Expression\LambdaInstance _or($a = null) logical OR
- * @method \Qmaker\Linq\Expression\LambdaInstance _xor($a = null) logical XOR
+ * @method \Qmaker\Linq\Expression\LambdaInstance and_($a = null) logical AND
+ * @method \Qmaker\Linq\Expression\LambdaInstance or_($a = null) logical OR
+ * @method \Qmaker\Linq\Expression\LambdaInstance xor_($a = null) logical XOR
  */
 class LambdaInstance implements LambdaInterface {
     /**
@@ -175,9 +175,9 @@ class LambdaInstance implements LambdaInterface {
      */
     public function __call($name, $arguments) {
         switch ($name) {
-            case '_and' : $operation = new Logical(Logical::_AND_); $priority = 3; break;
-            case '_or'  : $operation = new Logical(Logical::_OR_);  $priority = 1; break;
-            case '_xor' : $operation = new Logical(Logical::_XOR_); $priority = 2; break;
+            case 'and_' : $operation = new Logical(Logical::_AND_); $priority = 3; break;
+            case 'or_'  : $operation = new Logical(Logical::_OR_);  $priority = 1; break;
+            case 'xor_' : $operation = new Logical(Logical::_XOR_); $priority = 2; break;
             case 'eq'   : $operation = new Comparison(Comparison::_EQ_); $priority = 4; break;
             case 'ne'   : $operation = new Comparison(Comparison::_NE_); $priority = 4; break;
             case 'gt'   : $operation = new Comparison(Comparison::_GT_); $priority = 5; break;
