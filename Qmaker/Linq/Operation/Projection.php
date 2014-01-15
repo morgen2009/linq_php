@@ -8,7 +8,6 @@ interface Projection
      * Projects values that are based on a transform function
      * @param $expression
      * @return $this
-     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
     function select($expression);
 
@@ -16,7 +15,6 @@ interface Projection
      * Projects sequences of values that are based on a transform function and then flattens them into one sequence
      * @param $expression
      * @return $this
-     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
     function selectMany($expression);
 

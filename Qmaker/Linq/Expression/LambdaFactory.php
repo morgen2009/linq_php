@@ -3,6 +3,9 @@
 namespace Qmaker\Linq\Expression;
 
 
+/**
+ * @deprecated
+ */
 class LambdaFactory {
     static public function create($input) {
         if ($input instanceof LambdaInterface) {

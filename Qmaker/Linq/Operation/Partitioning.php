@@ -14,7 +14,6 @@ interface Partitioning
     /**
      * Skips elements based on a predicate function until an element does not satisfy the condition
      * @param mixed $predicate
-     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      * @return $this
      */
     function skipWhile($predicate);
@@ -29,7 +28,6 @@ interface Partitioning
     /**
      * Takes elements based on a predicate function until an element does not satisfy the condition
      * @param mixed $predicate
-     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      * @return $this
      */
     function takeWhile($predicate);

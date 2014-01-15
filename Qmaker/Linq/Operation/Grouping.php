@@ -9,7 +9,6 @@ interface Grouping
      * @param mixed $expression
      * @param callable|null $comparator
      * @return $this
-     * @see \Qmaker\Linq\Expression\LambdaFactory::create
      */
     function groupBy($expression, callable $comparator = null);
 }

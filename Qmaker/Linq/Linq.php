@@ -17,7 +17,8 @@ use Qmaker\Iterators\ProjectionIterator;
 use Qmaker\Iterators\ReverseIterator;
 use Qmaker\Iterators\SkipIterator;
 use Qmaker\Iterators\TakeIterator;
-use Qmaker\Linq\Expression\LambdaFactory;
+use Qmaker\Linq\Expression\Lambda;
+use Qmaker\Linq\Expression\LambdaInterface;
 
 class Linq implements IEnumerable
 {
@@ -152,7 +153,7 @@ class Linq implements IEnumerable
      */
     function where($predicate)
     {
-        $predicate = LambdaFactory::create($predicate);
+        $predicate = $this->expression($predicate);
 
         return new Linq(function (\Iterator $iterator) use ($predicate) {
             if ($iterator instanceof CallbackFilterIterator) {
@@ -179,7 +180,7 @@ class Linq implements IEnumerable
      */
     function skipWhile($predicate)
     {
-        $predicate = LambdaFactory::create($predicate);
+        $predicate = $this->expression($predicate);
 
         return new Linq(function (\Iterator $iterator) use ($predicate) {
             return new SkipIterator($iterator, $predicate);
@@ -201,7 +202,7 @@ class Linq implements IEnumerable
      */
     function takeWhile($predicate)
     {
-        $predicate = LambdaFactory::create($predicate);
+        $predicate = $this->expression($predicate);
 
         return new Linq(function (\Iterator $iterator) use ($predicate) {
             return new TakeIterator($iterator, $predicate);
@@ -213,7 +214,7 @@ class Linq implements IEnumerable
      */
     function select($expression)
     {
-        $expression = LambdaFactory::create($expression);
+        $expression = $this->expression($expression);
 
         return new Linq(function (\Iterator $iterator) use ($expression) {
             return new ProjectionIterator($iterator, $expression);
@@ -225,7 +226,7 @@ class Linq implements IEnumerable
      */
     function selectMany($expression)
     {
-        $expression = LambdaFactory::create($expression);
+        $expression = $this->expression($expression);
 
         return new Linq(function (\Iterator $iterator) use ($expression) {
             return new \RecursiveIteratorIterator(new ProjectionIterator($iterator, $expression), \RecursiveIteratorIterator::CHILD_FIRST);
@@ -250,7 +251,7 @@ class Linq implements IEnumerable
      */
     function distinct($expression, callable $comparator = null)
     {
-        $expression = LambdaFactory::create($expression);
+        $expression = $this->expression($expression);
 
         return new Linq(function (\Iterator $iterator) use ($expression) {
             return new DistinctIterator($iterator, $expression);
@@ -262,8 +263,8 @@ class Linq implements IEnumerable
      */
     function except($sequence, $expression, callable $comparator = null)
     {
-        $expression = LambdaFactory::create($expression);
         $sequence = $this->from($sequence);
+        $expression = $this->expression($expression);
 
         return new Linq(function (\Iterator $iterator, \Iterator $iteratorSub) use ($expression) {
             return new ExceptIterator($iterator, $iteratorSub, $expression);
@@ -275,8 +276,8 @@ class Linq implements IEnumerable
      */
     function intersect($sequence, $expression, callable $comparator = null)
     {
-        $expression = LambdaFactory::create($expression);
         $sequence = $this->from($sequence);
+        $expression = $this->expression($expression);
 
         return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression) {
             return new IntersectIterator($iteratorA, $iteratorB, $expression);
@@ -288,8 +289,8 @@ class Linq implements IEnumerable
      */
     function union($sequence, $expression, callable $comparator = null)
     {
-        $expression = LambdaFactory::create($expression);
         $sequence = $this->from($sequence);
+        $expression = $this->expression($expression);
 
         return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression) {
             $iterator = new \AppendIterator();
@@ -344,7 +345,7 @@ class Linq implements IEnumerable
             $self->init = function (\Iterator $iterator) use ($self) {
                 if (count($self->info['index_exp']) > 1) {
                     // build key extractor
-                    $keyExtractor = LambdaFactory::create($self->info['index_exp']);
+                    $keyExtractor = $this->expression($self->info['index_exp']);
 
                     // build comparator
                     $info = $self->info['index_cmp'];
@@ -363,7 +364,7 @@ class Linq implements IEnumerable
                     };
                 } else {
                     // build key extractor
-                    $keyExtractor = LambdaFactory::create($self->info['index_exp'][0]);
+                    $keyExtractor = $this->expression($self->info['index_exp'][0]);
 
                     // build comparator
                     $info = $self->info['index_cmp'][0];
@@ -418,7 +419,7 @@ class Linq implements IEnumerable
      */
     function all($expression)
     {
-        $expression = LambdaFactory::create($expression);
+        $expression = $this->expression($expression);
         $result = true;
 
         $this->each(function ($value, \Iterator $iterator) use ($expression, &$result) {
@@ -433,7 +434,7 @@ class Linq implements IEnumerable
      */
     function any($expression)
     {
-        $expression = LambdaFactory::create($expression);
+        $expression = $this->expression($expression);
         $result = false;
 
         $this->each(function ($value, \Iterator $iterator) use ($expression, &$result) {
@@ -486,7 +487,7 @@ class Linq implements IEnumerable
     function product($source, $projector = null)
     {
         $source = $this->from($source);
-        $projector = empty($projector) ? null : LambdaFactory::create($projector);
+        $projector = $this->expression($projector);
 
         return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($projector) {
 
@@ -515,10 +516,10 @@ class Linq implements IEnumerable
     function join($source, $expression, $expressionInner, $projector = null, $predicate = null)
     {
         $source = $this->from($source);
-        $expression = LambdaFactory::create($expression);
-        $expressionInner = LambdaFactory::create($expressionInner);
-        $projector = empty($projector) ? $projector : LambdaFactory::create($projector);
-        $predicate = empty($predicate) ? $predicate : LambdaFactory::create($predicate);
+        $expression = $this->expression($expression);
+        $expressionInner = $this->expression($expressionInner);
+        $projector = $this->expression($projector);
+        $predicate = $this->expression($predicate);
 
         return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression, $expressionInner, $projector, $predicate) {
 
@@ -543,10 +544,10 @@ class Linq implements IEnumerable
     function joinOuter($source, $expression, $expressionInner, $projector = null, $predicate = null)
     {
         $source = $this->from($source);
-        $expression = LambdaFactory::create($expression);
-        $expressionInner = LambdaFactory::create($expressionInner);
-        $projector = empty($projector) ? : LambdaFactory::create($projector);
-        $predicate = empty($predicate) ? : LambdaFactory::create($predicate);
+        $expression = $this->expression($expression);
+        $expressionInner = $this->expression($expressionInner);
+        $projector = $this->expression($projector);
+        $predicate = $this->expression($predicate);
 
         return new Linq(function (\Iterator $iteratorA, \Iterator $iteratorB) use ($expression, $expressionInner, $projector, $predicate) {
 
@@ -598,7 +599,7 @@ class Linq implements IEnumerable
         $count = 0;
 
         if (!empty($expression)) {
-            $expression = LambdaFactory::create($expression);
+            $expression = $this->expression($expression);
             foreach ($this as $item) {
                 $sum += call_user_func($expression, $item);
                 $count++;
@@ -621,7 +622,7 @@ class Linq implements IEnumerable
         if (empty($expression)) {
             return iterator_count($this);
         } else {
-            $expression = LambdaFactory::create($expression);
+            $expression = $this->expression($expression);
             $count = 0;
             foreach ($this as $item) {
                 $item = call_user_func($expression, $item);
@@ -641,7 +642,7 @@ class Linq implements IEnumerable
         $max = null;
 
         if (!empty($expression)) {
-            $expression = LambdaFactory::create($expression);
+            $expression = $this->expression($expression);
             foreach ($this as $item) {
                 $item = call_user_func($expression, $item);
                 if (is_null($max) || $max < $item) {
@@ -667,7 +668,7 @@ class Linq implements IEnumerable
         $min = null;
 
         if (!empty($expression)) {
-            $expression = LambdaFactory::create($expression);
+            $expression = $this->expression($expression);
             foreach ($this as $item) {
                 $item = call_user_func($expression, $item);
                 if (is_null($min) || $min > $item) {
@@ -693,7 +694,7 @@ class Linq implements IEnumerable
         $sum = 0;
 
         if (!empty($expression)) {
-            $expression = LambdaFactory::create($expression);
+            $expression = $this->expression($expression);
             foreach ($this as $item) {
                 $sum += call_user_func($expression, $item);
             };
@@ -901,10 +902,35 @@ class Linq implements IEnumerable
      */
     function groupBy($expression, callable $comparator = null)
     {
-        $expression = LambdaFactory::create($expression);
+        $expression = $this->expression($expression);
 
         return new Linq(function (\Iterator $iterator) use ($expression) {
             return new GroupingIterator($iterator);
         }, [$this]);
+    }
+
+    /**
+     * Convert standard expression into lambda function
+     * @param string|array|callable|LambdaInterface $input
+     * @return LambdaInterface|callable
+     */
+    protected function expression($input) {
+        if (empty($input)) {
+            return $input;
+        } elseif (is_string($input)) {
+            return Lambda::v($input);
+        } elseif (is_array($input)) {
+            $self = $this;
+            $input = array_map(function ($item) use ($self) {
+                return $self->expression($item);
+            }, $input);
+            return Lambda::complex($input);
+        } elseif ($input instanceof LambdaInterface) {
+            return $input;
+        } elseif (is_callable($input)) {
+            return $input;
+        } else {
+            return $input;
+        }
     }
 }
