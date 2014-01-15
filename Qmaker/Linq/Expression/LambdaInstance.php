@@ -106,11 +106,10 @@ class LambdaInstance implements LambdaInterface {
 
     /**
      * Add transforming operator of the current value to IEnumerable
-     * @throws \BadMethodCallException
-     * @return \Qmaker\Linq\IEnumerable
+     * @return LinqLambda
      */
     public function linq() {
-        throw new \BadMethodCallException('Not implemented');
+        return new LinqLambda($this);
     }
 
     /**
