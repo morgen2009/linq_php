@@ -1,118 +1,77 @@
 # Linq in PHP
 
-This is PHP library, that allows to query and update the collections following C# LINQ patterns. In the project, all
-standard enumerable methods from .NET framework 4.5 are implemented with similar interfaces adopted to the PHP language.
-The full list of these methods can be found in [MSDN](http://msdn.microsoft.com/en-us/library/vstudio/system.linq.enumerable_methods)
-and those modified interfaces are in the [Qmaker\Linq\Operation](lib/Qmaker/Linq/Operation) namespace. The enumerable methods are
-similar to the corresponding SQL commands (SELECT, WHERE, JOIN, etc.) and can be directly transformed into SQL.
-The current implementation is completely based on iterators and requires the PHP v5.3.
+This is PHP library, that allows to query collections following C# LINQ patterns. The standard LINQ methods are implemented with
+interfaces adopted to the PHP language. The full list of these methods can be taken from [MSDN, .NET 4.5](http://msdn.microsoft.com/en-us/library/vstudio/system.linq.enumerable_methods).
+The modified interfaces of these methods are located in the [Qmaker\Linq\Operation](Qmaker/Linq/Operation) namespace.
+At the present time the library requires PHP of the version 5.4.
 
-Developing this library I was impressed by the features of C# and would like to bring this one into the PHP world. I would appreciate any
-remarks from the community regarding the project, the performance or the code style. In presence of any positive feedback I would also
-write the documentation and fix my english.
+## Lambda expression
 
-# Main features / examples
+The class *Lambda* allows to build lambda expressions, anonymous functions with stored structure. The class
+creates a callable object, which can be used in LINQ methods as callable criteria, predicate or expression. Thus,
 
-Different use cases are presented in the unit tests within the library. Here I list the main part of the features with corresponding examples.
+    $f = Lambda::v()->add()->v()->mult(12)->gt(36);
 
-    $numbers = [1, 2, 3, 4];
-    $cars = CarFactory::instances();
-    $categories = CategoryFactory::instances();
+is equivalent to
 
-[x] array, iterator, callable as input
+    $f = function ($x) { return $x + $x*12 > 36; };
 
-    // [1,2,3]
-    Linq::from(new \ArrayIterator([1,2,3]));
-    Linq::from([1,2,3]);
-    Linq::range(1,3);
+More information and examples will be added later. See [unit tests](tests/Qmaker/Linq).
 
-    // ['a','a','a']
-    Linq::repeat('a',3);
+## Linq
 
-[x] different types of expressions (strings, callable, array)
+The following methods are implemented
 
-    Linq::from($cars)->select('price');
-    Linq::from($cars)->select(function (Car $c) { return $c->getPrice(); });
-    Linq::from($cars)->select([
-        'car'      => 'name',
-        'category' => 'category.name',
-        'price'    => 'price'
-    ]);
+*    Aggregation — aggregate, average, min, max, sum, count
+*    Concatenation — concat, zip
+*    Element — elementAt, elementAtOrDefault, first, firstOrDefault, last, lastOrDefault, single, singleOrDefault
+*    Equality — isEqual
+*    Filtering — ofType, where
+*    Generation — from, range, repeat
+*    Grouping — groupBy
+*    Joining — product, join, joinOuter, groupJoin
+*    Partitioning — skip, skipWhile, take, takeWhile
+*    Projection — select, selectMany, cast
+*    Quantifier — all, any, contains
+*    Set — distinct, intersect, except, union
+*    Sorting — orderBy, orderByDescending, thenBy, thenByDescending, reverse, order
+*    Others — toArray, toList, each
 
-[x] filtering
+The suited types for the source in the corresponding methods (like *from*) are **array**, **\Iterator**, **\IteratorAggregate** or **callable** variable.
+As an expression one can also specify **string**, **callable** variable, **array** or lambda expression **LambdaInterface**. The following example
 
-    Linq::from($numbers)->where(function ($n) { return $n > 1; })->skip(1);
+    $f = Linq::from([1, 2, 3, 4])->where(Lambda::v()->gt(2))->sum(Lambda::v()->mult(2));
 
-[x] aggregation
+will return 14. More information and examples will be added later. See [unit tests](tests/Qmaker/Linq).
 
-    Linq::from($cars)->sum('price');
-    Linq::from($numbers)->min();
+## Iterators
 
-[x] sorting
+The iterators are the keystone of this library. Within the project multiple iterators were additionally implemented
 
-    Linq::from($cars)->orderBy('price');
-    Linq::from($cars)->orderBy('year')->thenBy('price');
+* **CallbackFilterIterator** Filtering items using multiple callbacks
 
-[x] joining and cross-product
+* **CallbackIterator** Generate the sequence of the elements using a callback
 
-    // inner&outer join
-    Linq::from($cars)->join(Linq::from(category), 'id', 'category.id');
+* **GroupingIterator** Group elements by key
 
-    // cross-product
-    Linq::from($a)->from($b);
-    Linq::from($a)->product(Linq::from($b)->take(3));
+* **IndexIterator** Sort elements by key
 
-[x] grouping and late execution
+* **JoinIterator**, **OuterJoinIterator** Inner/outer join of two iterators
 
-    Linq::from($cars)->groupBy('category.id')->select([
-        'category' => Exp::group(),
-        'avr_price' => Linq::exp()->average('price')
-    ]);
-
-[x] quantifier
-
-    Linq::from($category)->any(function (Category $c) {
-        return $c->getCars() == null;
-    });
-
-[x] element accessing
-
-    Linq::from($category)->first();
-    Linq::from($category)->last();
-
-[x] sets operations
-
-    Linq::from($category)->except($vip_category);
-    Linq::from($category)->selectMany('cars')->distinct('id');
-
-# Iterators
-
-All enumerable methods are based on the iterators. Many iterators are missed in the standard PHP build. They are additionally
-implemented within the project in the [Qmaker\Linq\Iterators](lib/Qmaker/Linq/Iterators) namespace.
-
-* **CallbackIterator** Generate the sequence of the elements using a callable
-
-* **GroupingIterator** Group elements by the key function
-
-* **IndexIterator** Sort elements by the key function
-
-* **JoinIterator** Inner/outer join pf two iterators
+* **LimitIterator** Iterator over the given range
 
 * **ProductIterator** Cross-product of multiple iterators
 
-* **MultiCallbackFilterIterator** Filtering items using multiple callbacks
+* **SkipIterator** Skip items while some criteria is true
 
-* **SkipIterator** Skip items while the expression is true
+* **TakeIterator** Take items while some criteria is true
 
-* **TakeIterator** Take items while the expression is true
+* **ProjectionIterator** Convert current values or keys
 
-* **ProjectionIterator** Convert the item to the new one
-
-* **ReverseIterator** Reverse the order
+* **ReverseIterator** Reverse order
 
 * **DistinctIterator**, **ExceptIterator**, **IntersectIterator** Sets operations
 
-* **LazyIterator** Open inner iterator only of those first item will be requested
+* **LazyIterator** Build inner iterator when the first item will be requested
 
-* **OuterIterator** Re-assign the inner iterator
-
+* **VariableIterator** Re-assign the inner iterator
