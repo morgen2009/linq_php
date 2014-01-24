@@ -2,7 +2,9 @@
 
 namespace Qmaker\Iterators\Collections;
 
-class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \Countable, ComparerInterface {
+use Qmaker\Iterators\ComplexKeyInterface;
+
+class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \Countable, ComparerInterface, ComplexKeyInterface {
 
     /**
      * @var array
@@ -97,6 +99,14 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
      */
     public function key()
     {
+        return $this->position;
+    }
+
+    /**
+     * @see ComplexKeyInterface::keys
+     */
+    public function keys()
+    {
         return $this->items[$this->position]->key;
     }
 
@@ -153,14 +163,21 @@ class OrderedDictionary implements \Iterator, \ArrayAccess, \SeekableIterator, \
 
     /**
      * @param \Iterator $iterator
+     * @param callable $keyExtractor
      * @return void
      */
-    public function load(\Iterator $iterator) {
+    public function load(\Iterator $iterator, callable $keyExtractor = null) {
         // load
         $beginWindow = count($this->items);
         $iterator->rewind();
         while ($iterator->valid()) {
-            $this->items[] = new KeyValuePair($iterator->key(), $iterator->current());
+            $current = $iterator->current();
+            if (empty($keyExtractor)) {
+                $key = $iterator->key();
+            } else {
+                $key = call_user_func($keyExtractor, $current, $iterator);
+            }
+            $this->items[] = new KeyValuePair($key, $current);
             $iterator->next();
         }
         $endWindow = count($this->items);

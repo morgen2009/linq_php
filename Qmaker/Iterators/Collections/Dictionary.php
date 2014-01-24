@@ -2,7 +2,9 @@
 
 namespace Qmaker\Iterators\Collections;
 
-class Dictionary implements \Iterator, \ArrayAccess, \Countable {
+use Qmaker\Iterators\ComplexKeyInterface;
+
+class Dictionary implements \Iterator, \ArrayAccess, \Countable, ComplexKeyInterface {
 
     /**
      * @var array
@@ -97,6 +99,14 @@ class Dictionary implements \Iterator, \ArrayAccess, \Countable {
      * @see \Iterator::key
      */
     public function key()
+    {
+        return key($this->items);
+    }
+
+    /**
+     * @see ComplexKeyInterface::keys
+     */
+    public function keys()
     {
         $current = current($this->items);
         return $current instanceof KeyValuePair ? $current->key : key($this->items);

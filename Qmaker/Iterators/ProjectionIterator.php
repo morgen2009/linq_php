@@ -7,7 +7,7 @@ namespace Qmaker\Iterators;
  *
  * Generate the new sequence applying the callback to the elements of the old sequence
  */
-class ProjectionIterator extends \IteratorIterator
+class ProjectionIterator extends \IteratorIterator implements ComplexKeyInterface
 {
     /**
      * @var callback
@@ -54,9 +54,9 @@ class ProjectionIterator extends \IteratorIterator
     }
 
     /**
-     * @see \Iterator::key
+     * @see ComplexKeyInterface::keys
      */
-    public function key()
+    public function keys()
     {
         if ($this->mode == self::KEY) {
             return call_user_func($this->projector, parent::current(), $this);

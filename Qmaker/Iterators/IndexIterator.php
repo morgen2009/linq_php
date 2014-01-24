@@ -43,7 +43,7 @@ class IndexIterator extends LazyIterator implements \SeekableIterator, RelationI
      * @see LazyIterator::build
      */
     protected function build() {
-        $this->items->load(new ProjectionIterator($this->source, $this->keyExtractor, ProjectionIterator::KEY));
+        $this->items->load($this->source, $this->keyExtractor);
         return $this->items;
     }
 
