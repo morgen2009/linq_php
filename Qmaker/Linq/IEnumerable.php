@@ -3,6 +3,7 @@
 namespace Qmaker\Linq;
 
 
+use Qmaker\Iterators\ComplexKeyInterface;
 use Qmaker\Linq\Operation\Aggregation;
 use Qmaker\Linq\Operation\Concatenation;
 use Qmaker\Linq\Operation\Element;
@@ -17,7 +18,7 @@ use Qmaker\Linq\Operation\Quantifier;
 use Qmaker\Linq\Operation\Set;
 use Qmaker\Linq\Operation\Sorting;
 
-interface IEnumerable extends \IteratorAggregate, Aggregation, Concatenation, Element, Equality, Filtering, Generation, Grouping, Joining, Partitioning, Projection, Quantifier, Set, Sorting {
+interface IEnumerable extends \IteratorAggregate, Aggregation, Concatenation, Element, Equality, Filtering, Generation, Grouping, Joining, Partitioning, Projection, Quantifier, Set, Sorting, ComplexKeyInterface {
     /**
      * Export data to array
      * @return array

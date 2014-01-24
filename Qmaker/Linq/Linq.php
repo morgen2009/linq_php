@@ -5,6 +5,7 @@ namespace Qmaker\Linq;
 use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
 use Qmaker\Iterators\Collections\DefaultComparer;
+use Qmaker\Iterators\ComplexKeyFinder;
 use Qmaker\Iterators\DistinctIterator;
 use Qmaker\Iterators\ExceptIterator;
 use Qmaker\Iterators\GroupingIterator;
@@ -38,6 +39,11 @@ class Linq implements IEnumerable
     protected $parent;
 
     /**
+     * @var \Iterator
+     */
+    protected $iterator;
+
+    /**
      * Constructor
      * @param callable $init
      * @param IEnumerable[] $parent
@@ -51,11 +57,14 @@ class Linq implements IEnumerable
      * @see \IteratorAggregate::getIterator
      */
     public function getIterator() {
-        $parent = array_map(function (IEnumerable $item) {
-            return $item->getIterator();
-        }, $this->parent);
+        if (empty($this->iterator)) {
+            $parent = array_map(function (IEnumerable $item) {
+                return $item->getIterator();
+            }, $this->parent);
 
-        return call_user_func_array($this->init, $parent);
+            $this->iterator = call_user_func_array($this->init, $parent);
+        }
+        return $this->iterator;
     }
 
     /**
@@ -931,6 +940,20 @@ class Linq implements IEnumerable
             return $input;
         } else {
             return $input;
+        }
+    }
+
+    /**
+     * @see ComplexKeyInterface::keys
+     */
+    function keys()
+    {
+        $iterator = $this->getIterator();
+        $keyHolder = ComplexKeyFinder::findComplexKeyHolder($iterator);
+        if (empty($keyHolder)) {
+            return $iterator->key();
+        } else {
+            return $keyHolder->keys();
         }
     }
 }

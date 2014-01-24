@@ -36,6 +36,16 @@ class LinqSortingTest extends \PHPUnit_Framework_TestCase {
         })->thenBy(function ($value) {
             return $value;
         });
-        $this->assertEquals([1,3,5,2,4], $iterator->toArray());
+        $key = [];
+        $keys = [];
+        $value = [];
+        foreach ($iterator as $k => $v) {
+            $key[] = $k;
+            $keys[] = $iterator->keys();
+            $value[] = $v;
+        }
+        $this->assertEquals([0,1,2,3,4], $key, 'Key');
+        $this->assertEquals([[1,1],[1,3],[1,5],[0,2],[0,4]], $keys, 'Keys');
+        $this->assertEquals([1,3,5,2,4], $value, 'Value');
     }
 }
