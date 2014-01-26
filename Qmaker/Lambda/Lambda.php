@@ -25,6 +25,9 @@ use Qmaker\Lambda\Operators\Path;
  * @method \Qmaker\Lambda\Lambda and_($a = null) logical AND
  * @method \Qmaker\Lambda\Lambda or_($a = null) logical OR
  * @method \Qmaker\Lambda\Lambda xor_($a = null) logical XOR
+ * @method static \Qmaker\Lambda\Lambda _complex(array $a)
+ * @method static \Qmaker\Lambda\Lambda _x(int $i=0)
+ * @method static \Qmaker\Lambda\Lambda _c($value)
  */
 class Lambda extends Expression {
 
@@ -184,8 +187,19 @@ class Lambda extends Expression {
         return $this;
     }
 
+    /**
+     * Hook for static methods. If the prefix of the method is '_', then the new instance will be created and the corresponding method (without leading "_") will be executed
+     * @param $name
+     * @param $arguments
+     * @return Lambda|mixed
+     */
     public static function __callStatic($name, $arguments)
     {
-        die(__METHOD__);
+        if (substr($name, 0, 1) === '_') {
+            $object = new Lambda();
+            return call_user_func_array([$object, substr($name, 1)], $arguments);
+        } else {
+            return null;
+        }
     }
 }
