@@ -15,11 +15,11 @@ class Math implements OperatorInterface {
 
     protected $operator;
 
+    protected static $instances = [];
+
     public function __construct($operator) {
         $this->operator = $operator;
     }
-
-    protected static $instances = [];
 
     /**
      * Create single instance for each operator
