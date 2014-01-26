@@ -17,6 +17,13 @@ class Callback implements OperatorInterface {
     }
 
     /**
+     * @return callable
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+    /**
      * @see OperatorInterface::apply
      */
     public function apply(array &$stack)

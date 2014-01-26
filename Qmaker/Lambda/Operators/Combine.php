@@ -7,7 +7,20 @@ use Qmaker\Lambda\OperatorInterface;
 
 class Combine implements OperatorInterface {
 
-    public function __construct() {
+    protected static $instance = null;
+
+    protected function __construct() {
+    }
+
+    /**
+     * Create single instance
+     * @return Combine
+     */
+    public static function instance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**

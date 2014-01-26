@@ -40,24 +40,22 @@ class Comparison implements OperatorInterface {
     public function apply(array &$stack)
     {
         $count = array_pop($stack);
-        $total = true;
+        if ($count !== 2) {
+            throw new \BadMethodCallException("Wrong number of argument (expected: 2, actual: {$count})");
+        }
+        $prev = array_pop($stack);
         $current = array_pop($stack);
-        while ($count > 1) {
-            $prev = $current;
-            $current = array_pop($stack);
-            switch ($this->operator) {
-                case self::_EQ_: $result = $prev == $current; break;
-                case self::_NE_: $result = $prev != $current; break;
-                case self::_GT_: $result = $prev <  $current; break;
-                case self::_GE_: $result = $prev <= $current; break;
-                case self::_LT_: $result = $prev >  $current; break;
-                case self::_LE_: $result = $prev >= $current; break;
-                default: $result = true;
-            }
-            $total = $total && $result;
-            $count--;
-        };
-        array_push($stack, $total);
+
+        switch ($this->operator) {
+            case self::_EQ_: $result = $prev == $current; break;
+            case self::_NE_: $result = $prev != $current; break;
+            case self::_GT_: $result = $prev <  $current; break;
+            case self::_GE_: $result = $prev <= $current; break;
+            case self::_LT_: $result = $prev >  $current; break;
+            case self::_LE_: $result = $prev >= $current; break;
+            default: $result = true;
+        }
+        array_push($stack, $result);
     }
 
     /**
