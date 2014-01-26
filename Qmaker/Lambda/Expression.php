@@ -73,8 +73,14 @@ class Expression {
                 $this->data = $export;
             } else {
                 $item =& $this->levels[count($this->levels)-1];
-                $item = array_merge($item, $export);
-                $item[self::OFFSET_COUNT]++;
+                $operator = $item[self::OFFSET_OPERATOR];
+                if ($operator instanceof ParameterAwareInterface) {
+                    /** @var ParameterAwareInterface $operator */
+                    $operator->addParameter($export);
+                } else {
+                    $item = array_merge($item, $export);
+                    $item[self::OFFSET_COUNT]++;
+                }
             }
         }
         return true;
@@ -91,10 +97,17 @@ class Expression {
 
         for ($i = count($this->levels)-1; $i>=0; $i--) {
             $item = $this->levels[$i];
-
-            $item = array_merge($item, $export);
-            array_push($item, $item[self::OFFSET_COUNT]+$count);
-            array_push($item, $item[self::OFFSET_OPERATOR]);
+            $operator = $item[self::OFFSET_OPERATOR];
+            if ($operator instanceof ParameterAwareInterface) {
+                /** @var ParameterAwareInterface $operator */
+                foreach ($export as $data) {
+                    $operator->addParameter($data);
+                }
+            } else {
+                $item = array_merge($item, $export);
+                array_push($item, $item[self::OFFSET_COUNT]+$count);
+            }
+            array_push($item, $operator);
 
             $export = array_slice($item, 2);
             $count = 1;
