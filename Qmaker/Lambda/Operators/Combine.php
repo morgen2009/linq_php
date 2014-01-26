@@ -31,10 +31,11 @@ class Combine implements OperatorInterface {
         $count = array_pop($stack);
         $arguments = [];
         while ($count > 0) {
-            $arguments[] = array_pop($stack);
-            $count--;
+            $field = array_pop($stack);
+            $arguments[$field] = array_pop($stack);
+            $count-=2;
         }
-        array_push($stack, $result);
+        array_push($stack, $arguments);
     }
 
     /**

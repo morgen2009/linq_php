@@ -29,7 +29,7 @@ use Qmaker\Lambda\Operators\Path;
 class Lambda extends Expression {
 
     /**
-     * @return $this
+     * @return Lambda
      */
     public static function init()
     {
@@ -39,7 +39,7 @@ class Lambda extends Expression {
     /**
      * Add i-th argument of the callable into expression
      * @param int $i
-     * @return $this
+     * @return Lambda|mixed
      */
     public function x($i = 0) {
         $this->addData(new Parameters($i));
@@ -49,7 +49,7 @@ class Lambda extends Expression {
     /**
      * Add constant into expression
      * @param $value
-     * @return $this
+     * @return Lambda|mixed
      */
     public function c($value) {
         $this->addData($value);
@@ -59,13 +59,14 @@ class Lambda extends Expression {
     /**
      * Add complex object (array) into expression
      * @param array $value
-     * @return $this
+     * @return Lambda|mixed
      */
     public function complex(array $value)
     {
         $this->with();
-        foreach ($value as $item) {
+        foreach ($value as $field => $item) {
             $this->addData($item);
+            $this->addData($field);
             $this->addOperator(Combine::instance());
         }
         $this->end();
@@ -76,7 +77,7 @@ class Lambda extends Expression {
     /**
      * Add transforming operator
      * @param callable $callback
-     * @return $this
+     * @return Lambda|mixed
      */
     public function call(callable $callback) {
         $this->addOperator(new Callback($callback));
@@ -87,7 +88,7 @@ class Lambda extends Expression {
      * Add mathematical expression in the string format
      * @param string $expression
      * @throws \BadMethodCallException
-     * @return $this
+     * @return Lambda|mixed
      */
     public function math($expression) {
         throw new \BadMethodCallException('Not implemented');
@@ -96,7 +97,7 @@ class Lambda extends Expression {
     /**
      * Add like comparison operator
      * @param string $pattern
-     * @return $this
+     * @return Lambda|mixed
      */
     public function like($pattern) {
         $isRegexp = strstr($pattern, '%') !== false;
@@ -123,7 +124,7 @@ class Lambda extends Expression {
     /**
      * Apply path
      * @param string $path
-     * @return $this
+     * @return Lambda|mixed
      */
     public function item($path) {
         $this->addOperator(new Path());
@@ -133,7 +134,7 @@ class Lambda extends Expression {
 
     /**
      * Compute the next element
-     * @return $this
+     * @return Lambda|mixed
      */
     public function comma() {
         $this->addOperator(Combine::instance());
@@ -144,7 +145,7 @@ class Lambda extends Expression {
      * Hook for other methods
      * @param $name
      * @param $arguments
-     * @return $this
+     * @return Lambda|mixed
      * @throws \BadMethodCallException
      */
     public function __call($name, $arguments) {
@@ -175,16 +176,16 @@ class Lambda extends Expression {
         if (empty($arguments)) {
             $this->addOperator($operator);
         } else {
-            $flag = false;
             foreach ($arguments as $item) {
-                if ($flag) {
-                    $this->addOperator($operator);
-                } else {
-                    $flag = true;
-                }
+                $this->addOperator($operator);
                 $this->addData($item);
             }
         }
         return $this;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        die(__METHOD__);
     }
 }

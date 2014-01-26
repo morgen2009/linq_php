@@ -63,61 +63,55 @@ class Expression {
                 return false;
             }
 
-            // export and add to the previous level
-            $export = array_slice($item, 2);
-            array_push($export, $count);
-            array_push($export, $operator);
+            // export expression
+            $this->dataToLevel();
+            $this->levelToData();
 
-            array_pop($this->levels);
-            if (empty($this->levels)) {
-                $this->data = $export;
-            } else {
-                $item =& $this->levels[count($this->levels)-1];
-                $operator = $item[self::OFFSET_OPERATOR];
-                if ($operator instanceof ParameterAwareInterface) {
-                    /** @var ParameterAwareInterface $operator */
-                    $operator->addParameter($export);
-                } else {
-                    $item = array_merge($item, $export);
-                    $item[self::OFFSET_COUNT]++;
-                }
+            if (!empty($this->levels)) {
+                $this->dataToLevel();
             }
         }
         return true;
     }
 
+    protected function levelToData()
+    {
+        // extract level
+        $item = array_pop($this->levels);
+
+        // convert it into postfix notation and store in data
+        array_push($item, $item[self::OFFSET_COUNT]);
+        array_push($item, $item[self::OFFSET_OPERATOR]);
+        $this->data = array_slice($item, 2);
+        $this->dataCount = empty($this->data) ? 0 : 1;
+    }
+
+    protected function dataToLevel()
+    {
+        $item =& $this->levels[count($this->levels)-1];
+        $operator = $item[self::OFFSET_OPERATOR];
+        if ($operator instanceof ParameterAwareInterface) {
+            /** @var ParameterAwareInterface $operator */
+            foreach ($this->data as $value) {
+                $operator->addParameter($value);
+            }
+        } else {
+            $item = array_merge($item, $this->data);
+            $item[self::OFFSET_COUNT] += $this->dataCount;
+        }
+        $this->data = [];
+        $this->dataCount = 0;
+    }
+
     /**
      * @throws \BadMethodCallException
-     * @return array
      */
     protected function collapseAll()
     {
-        $export = $this->data;
-        $count = $this->dataCount;
-
         for ($i = count($this->levels)-1; $i>=0; $i--) {
-            $item = $this->levels[$i];
-            $operator = $item[self::OFFSET_OPERATOR];
-            if ($operator instanceof ParameterAwareInterface) {
-                /** @var ParameterAwareInterface $operator */
-                foreach ($export as $data) {
-                    $operator->addParameter($data);
-                }
-            } else {
-                $item = array_merge($item, $export);
-                array_push($item, $item[self::OFFSET_COUNT]+$count);
-            }
-            array_push($item, $operator);
-
-            $export = array_slice($item, 2);
-            $count = 1;
-            unset($this->levels[$i]);
+            $this->dataToLevel();
+            $this->levelToData();
         }
-
-        $this->data = [];
-        $this->dataCount = 0;
-
-        return $export;
     }
 
     /**
@@ -146,7 +140,7 @@ class Expression {
             throw new \BadMethodCallException("Read-only expression can not be modified");
         }
         if ($this->collapseLevels($operator)) {
-            array_push($this->levels, array_merge([$operator, 1], $this->data));
+            array_push($this->levels, array_merge([$operator, $this->dataCount], $this->data));
             $this->data = [];
             $this->dataCount = 0;
         }
@@ -184,8 +178,7 @@ class Expression {
         if (empty($this->groups) || $this->groups->isEmpty()) {
             throw new \BadMethodCallException('Opening bracket is missing');
         }
-        $this->data = $this->collapseAll();
-        $this->dataCount = empty($this->data) ? 0 : 1;
+        $this->collapseAll();
         $this->levels = $this->groups->pop();
 
         return $this;
@@ -196,8 +189,7 @@ class Expression {
      */
     public function compile() {
         if (!$this->isCompiled) {
-            $this->data = $this->collapseAll();
-            $this->dataCount = 1;
+            $this->collapseAll();
             $this->isCompiled = true;
         }
     }
@@ -217,6 +209,7 @@ class Expression {
      */
     public function __invoke()
     {
+        $this->compile();
         $stack = [];
         $params = func_get_args();
 
