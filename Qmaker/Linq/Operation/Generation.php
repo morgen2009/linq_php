@@ -29,4 +29,17 @@ interface Generation
      * @return $this
      */
     static function from($source);
+
+    /**
+     * Returns an empty collection.
+     * @return $this
+     */
+    static function empty_();
+
+    /**
+     * Replaces an empty collection with a default valued singleton collection.
+     * @param mixed $default
+     * @return $this
+     */
+    function defaultIfEmpty($default = null);
 }
