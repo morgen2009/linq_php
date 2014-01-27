@@ -50,10 +50,16 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
 
     public function testMath()
     {
-        $f = Lambda::init()->math('1+2*x', Lambda::init()->x());
+        $f = Lambda::init()->math('1+2*x'); // "x" stands for first argument
         $this->assertEquals(5, $f(2));
 
-        $f = Lambda::init()->math('1+2*x>=2 & (x<12)', Lambda::init()->x());
-        $this->assertEquals(true, $f(2));
+        $f = Lambda::init()->math('1+2*X.0>=2 & (X.1<12)'); // "X" stands for array of arguments
+        $this->assertEquals(true, $f(2, 3));
+    }
+
+    public function testMathWithParams()
+    {
+        $f = Lambda::init()->math('1+2*x+p.0', 2); // "p" stands for array of parameters (here [2])
+        $this->assertEquals(7, $f(2));
     }
 }

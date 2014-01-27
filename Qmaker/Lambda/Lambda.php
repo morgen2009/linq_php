@@ -93,6 +93,8 @@ class Lambda extends Expression {
     public function math($expression) {
         $tokens = '((\d+|\+|-|\(|\)|\*\*|/|\*|,|\.|>=|!=|<=|=|<|>|&|\||!|\^)|\s+)';
         $elements = preg_split($tokens, $expression, 0,  PREG_SPLIT_NO_EMPTY |  PREG_SPLIT_DELIM_CAPTURE);
+        $params = func_get_args();
+        array_shift($params);
 
         $this->with();
         foreach ($elements as $item) {
@@ -117,6 +119,9 @@ class Lambda extends Expression {
                 case '^' : $this->addOperator(Logical::instance(Logical::_XOR_)); break;
                 case '!' : $this->addOperator(Logical::instance(Logical::_NOT_)); break;
                 case 'x' : $this->x(); break;
+                case 'p' : $this->addData(function () use ($params) {
+                    return $params;
+                }); break;
                 case 'X' : $this->addData(function () {
                     return func_get_args();
                 }); break;
