@@ -91,7 +91,40 @@ class Lambda extends Expression {
      * @return Lambda|mixed
      */
     public function math($expression) {
-        throw new \BadMethodCallException('Not implemented');
+        $tokens = '((\d+|\+|-|\(|\)|\*\*|/|\*|,|\.|>=|!=|<=|=|<|>|&|\||!|\^)|\s+)';
+        $elements = preg_split($tokens, $expression, 0,  PREG_SPLIT_NO_EMPTY |  PREG_SPLIT_DELIM_CAPTURE);
+
+        $this->with();
+        foreach ($elements as $item) {
+            switch ($item) {
+                case '+' : $this->addOperator(Math::instance(Math::ADD)); break;
+                case '-' : $this->addOperator(Math::instance(Math::SUB)); break;
+                case '*' : $this->addOperator(Math::instance(Math::MULT)); break;
+                case '/' : $this->addOperator(Math::instance(Math::DIV)); break;
+                case '**': $this->addOperator(Math::instance(Math::POWER)); break;
+                case '(' : $this->with(); break;
+                case ')' : $this->end(); break;
+                case ',' : $this->comma(); break;
+                case '.' : $this->addOperator(new Path()); break;
+                case '>=': $this->addOperator(Comparison::instance(Comparison::_GE_)); break;
+                case '<=': $this->addOperator(Comparison::instance(Comparison::_LE_)); break;
+                case '>' : $this->addOperator(Comparison::instance(Comparison::_GT_)); break;
+                case '<' : $this->addOperator(Comparison::instance(Comparison::_LT_)); break;
+                case '=' : $this->addOperator(Comparison::instance(Comparison::_EQ_)); break;
+                case '!=': $this->addOperator(Comparison::instance(Comparison::_NE_)); break;
+                case '&' : $this->addOperator(Logical::instance(Logical::_AND_)); break;
+                case '|' : $this->addOperator(Logical::instance(Logical::_OR_)); break;
+                case '^' : $this->addOperator(Logical::instance(Logical::_XOR_)); break;
+                case '!' : $this->addOperator(Logical::instance(Logical::_NOT_)); break;
+                case 'x' : $this->x(); break;
+                case 'X' : $this->addData(function () {
+                    return func_get_args();
+                }); break;
+                default: $this->addData($item);
+            }
+        }
+        $this->end();
+        return $this;
     }
 
     /**
