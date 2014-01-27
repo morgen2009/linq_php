@@ -12,22 +12,19 @@ use Qmaker\Lambda\Operators\Math;
 use Qmaker\Lambda\Operators\Path;
 
 /**
- * @method \Qmaker\Lambda\Lambda add($a = null) '+' operator
- * @method \Qmaker\Lambda\Lambda sub($a = null) '-' operator
- * @method \Qmaker\Lambda\Lambda mult($a = null) '*' operator
- * @method \Qmaker\Lambda\Lambda div($a = null) '/' operator
- * @method \Qmaker\Lambda\Lambda eq($a = null) '==' operator
- * @method \Qmaker\Lambda\Lambda ne($a = null) '!=' operator
- * @method \Qmaker\Lambda\Lambda gt($a = null) '>' operator
- * @method \Qmaker\Lambda\Lambda ge($a = null) '>=' operator
- * @method \Qmaker\Lambda\Lambda lt($a = null) '<' operator
- * @method \Qmaker\Lambda\Lambda le($a = null) '>=' operator
- * @method \Qmaker\Lambda\Lambda and_($a = null) logical AND
- * @method \Qmaker\Lambda\Lambda or_($a = null) logical OR
- * @method \Qmaker\Lambda\Lambda xor_($a = null) logical XOR
- * @method static \Qmaker\Lambda\Lambda _complex(array $a)
- * @method static \Qmaker\Lambda\Lambda _x(int $i=0)
- * @method static \Qmaker\Lambda\Lambda _c($value)
+ * @method \Qmaker\Lambda\Lambda|mixed add($a = null) '+' operator
+ * @method \Qmaker\Lambda\Lambda|mixed sub($a = null) '-' operator
+ * @method \Qmaker\Lambda\Lambda|mixed mult($a = null) '*' operator
+ * @method \Qmaker\Lambda\Lambda|mixed div($a = null) '/' operator
+ * @method \Qmaker\Lambda\Lambda|mixed eq($a = null) '==' operator
+ * @method \Qmaker\Lambda\Lambda|mixed ne($a = null) '!=' operator
+ * @method \Qmaker\Lambda\Lambda|mixed gt($a = null) '>' operator
+ * @method \Qmaker\Lambda\Lambda|mixed ge($a = null) '>=' operator
+ * @method \Qmaker\Lambda\Lambda|mixed lt($a = null) '<' operator
+ * @method \Qmaker\Lambda\Lambda|mixed le($a = null) '>=' operator
+ * @method \Qmaker\Lambda\Lambda|mixed and_($a = null) logical AND
+ * @method \Qmaker\Lambda\Lambda|mixed or_($a = null) logical OR
+ * @method \Qmaker\Lambda\Lambda|mixed xor_($a = null) logical XOR
  */
 class Lambda extends Expression {
 
@@ -185,21 +182,5 @@ class Lambda extends Expression {
             }
         }
         return $this;
-    }
-
-    /**
-     * Hook for static methods. If the prefix of the method is '_', then the new instance will be created and the corresponding method (without leading "_") will be executed
-     * @param $name
-     * @param $arguments
-     * @return Lambda|mixed
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        if (substr($name, 0, 1) === '_') {
-            $object = new Lambda();
-            return call_user_func_array([$object, substr($name, 1)], $arguments);
-        } else {
-            return null;
-        }
     }
 }

@@ -1,11 +1,9 @@
 <?php
 
-namespace Qmaker\Linq;
+namespace Qmaker\Linq\Expression;
 
 
 use Qmaker\Fixtures\CarExample;
-use Qmaker\Linq\Expression\Lambda;
-use Qmaker\Linq\Expression\LambdaInstance;
 
 class LambdaTest extends \PHPUnit_Framework_TestCase {
     public function testVariable()
@@ -20,7 +18,7 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
 
     public function testLogicalOperation()
     {
-        $l = Lambda::and_(Lambda::v()->gt(1), Lambda::v()->lt(2))->eq(true);
+        $l = Lambda::with()->v()->gt(1)->and_()->v()->lt(2)->end()->eq(true);
         $this->assertEquals(true, $l(1.5));
     }
 

@@ -31,10 +31,10 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
 
     public function testComplex()
     {
-        $l = Lambda::_complex([
-            'x1' => Lambda::_x(),
-            'x2' => Lambda::_x()->mult(2),
-            'x3' => Lambda::_c(1)
+        $l = Lambda::init()->complex([
+            'x1' => Lambda::init()->x(),
+            'x2' => Lambda::init()->x()->mult(2),
+            'x3' => Lambda::init()->c(1)
         ]);
         $this->assertEquals([ 'x1'=>1.5, 'x2'=>3.0, 'x3'=>1 ], $l(1.5));
     }
