@@ -47,4 +47,13 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
         $l = Lambda::init()->x()->like('%hello');
         $this->assertEquals(true, $l('ww hello'), 'regexp');
     }
+
+    public function testMath()
+    {
+        $f = Lambda::init()->math('1+2*x', Lambda::init()->x());
+        $this->assertEquals(5, $f(2));
+
+        $f = Lambda::init()->math('1+2*x>=2 & (x<12)', Lambda::init()->x());
+        $this->assertEquals(true, $f(2));
+    }
 }

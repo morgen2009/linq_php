@@ -186,12 +186,14 @@ class Expression {
 
     /**
      * Prepare expression to be computed and mark it as read-only
+     * @return callable|$this
      */
     public function compile() {
         if (!$this->isCompiled) {
             $this->collapseAll();
             $this->isCompiled = true;
         }
+        return $this;
     }
 
     /**
