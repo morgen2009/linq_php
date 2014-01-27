@@ -5,6 +5,7 @@ namespace Qmaker\Linq;
 use Qmaker\Iterators\CallbackFilterIterator;
 use Qmaker\Iterators\CallbackIterator;
 use Qmaker\Iterators\Collections\DefaultComparer;
+use Qmaker\Iterators\Collections\Dictionary;
 use Qmaker\Iterators\ComplexKeyFinder;
 use Qmaker\Iterators\DistinctIterator;
 use Qmaker\Iterators\ExceptIterator;
@@ -78,7 +79,32 @@ class Linq implements IEnumerable
      * @see \Qmaker\Linq\IEnumerable::toList
      */
     public function toList() {
-        return Linq::from($this->toArray());
+        return  new \ArrayIterator($this->toArray());
+    }
+
+    /**
+     * @see \Qmaker\Linq\IEnumerable::asEnumerable
+     */
+    public function asEnumerable() {
+        return $this;
+    }
+
+    /**
+     * @see \Qmaker\Linq\IEnumerable::toDictionary
+     */
+    public function toDictionary() {
+        $dict = new Dictionary();
+        foreach ($this as $v) {
+            $dict->offsetSet($this->keys(), $v);
+        }
+        return $dict;
+    }
+
+    /**
+     * @see \Qmaker\Linq\IEnumerable::toLookup
+     */
+    public function toLookup(callable $keyExtractor = null) {
+        return (new GroupingIterator($this->getIterator(), $keyExtractor))->getInnerIterator();
     }
 
     /**

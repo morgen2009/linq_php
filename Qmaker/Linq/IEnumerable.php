@@ -3,6 +3,8 @@
 namespace Qmaker\Linq;
 
 
+use Qmaker\Iterators\Collections\Dictionary;
+use Qmaker\Iterators\Collections\Lookup;
 use Qmaker\Iterators\ComplexKeyInterface;
 use Qmaker\Linq\Operation\Aggregation;
 use Qmaker\Linq\Operation\Concatenation;
@@ -30,6 +32,25 @@ interface IEnumerable extends \IteratorAggregate, Aggregation, Concatenation, El
      * @return IEnumerable
      */
     function toList();
+
+    /**
+     * Export data to IEnumerable
+     * @return IEnumerable
+     */
+    function asEnumerable();
+
+    /**
+     * Export data to dictionary
+     * @return Dictionary
+     */
+    function toDictionary();
+
+    /**
+     * Export data to lookup
+     * @param callable $keyExtractor
+     * @return Lookup
+     */
+    function toLookup(callable $keyExtractor = null);
 
     /**
      * Apply callback to each element of the sequence
