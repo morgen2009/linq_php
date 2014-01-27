@@ -138,6 +138,30 @@ class Linq implements IEnumerable
     }
 
     /**
+     * @see \Qmaker\Linq\Operation\Generation::empty_
+     */
+    static function empty_()
+    {
+        return new Linq(function () {
+            return new \EmptyIterator();
+        });
+    }
+
+    /**
+     * @see \Qmaker\Linq\Operation\Generation::defaultIfEmpty
+     */
+    public function defaultIfEmpty($default = null)
+    {
+        $iterator = $this->getIterator();
+        $iterator->rewind();
+        if ($iterator->valid()) {
+            return $iterator->current();
+        } else {
+            return $default;
+        }
+    }
+
+    /**
      * @see \Qmaker\Linq\Operation\Filtering::ofType
      */
     function ofType($name)
