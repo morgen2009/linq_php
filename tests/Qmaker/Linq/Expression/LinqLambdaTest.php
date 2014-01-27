@@ -12,6 +12,13 @@ class LinqLambdaTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $lambda($data));
     }
 
+    public function testSum()
+    {
+        $lambda = Lambda::v()->linq()->sum();
+        $data = new \ArrayIterator([2, 3, 4]);
+        $this->assertEquals(9, $lambda($data));
+    }
+
     public function testFirstWithComparison()
     {
         $lambda = Lambda::v()->linq()->first()->add(1);
