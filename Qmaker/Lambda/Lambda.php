@@ -101,15 +101,18 @@ class Lambda extends Expression {
      * @return Lambda|mixed
      */
     public function math($names, $expression = null) {
+        $params = func_get_args();
         if ($expression === null) {
             $expression = $names;
             $names = 'x';
+
+            array_shift($params);
+        } else {
+            array_shift($params);
+            array_shift($params);
         }
         $tokens = '((\d+|\+|-|\(|\)|\*\*|/|\*|,|\.|>=|!=|<=|=|<|>|&|\||!|\^)|\s+)';
         $elements = preg_split($tokens, $expression, 0,  PREG_SPLIT_NO_EMPTY |  PREG_SPLIT_DELIM_CAPTURE);
-        $params = func_get_args();
-        array_shift($params);
-        array_shift($params);
 
         $this->with();
         foreach ($elements as $item) {
