@@ -30,10 +30,19 @@ class Lambda extends Expression {
 
     /**
      * @return Lambda
+     * @deprecated
      */
     public static function init()
     {
         return new Lambda();
+    }
+
+    /**
+     * @see Qmaker\Lambda\Lambda::math
+     */
+    public static function define($names = null, $expression = null)
+    {
+        return (new Lambda())->math($names, $expression);
     }
 
     /**
@@ -86,14 +95,20 @@ class Lambda extends Expression {
 
     /**
      * Add mathematical expression in the string format
-     * @param string $expression
+     * @param string|string[] $names The name (string) or names (string[]) of input parameters for the expression
+     * @param string $expression Mathematical expression in the string format. If null, then the expression is given in the $names
      * @throws \BadMethodCallException
      * @return Lambda|mixed
      */
-    public function math($expression) {
+    public function math($names, $expression = null) {
+        if ($expression === null) {
+            $expression = $names;
+            $names = 'x';
+        }
         $tokens = '((\d+|\+|-|\(|\)|\*\*|/|\*|,|\.|>=|!=|<=|=|<|>|&|\||!|\^)|\s+)';
         $elements = preg_split($tokens, $expression, 0,  PREG_SPLIT_NO_EMPTY |  PREG_SPLIT_DELIM_CAPTURE);
         $params = func_get_args();
+        array_shift($params);
         array_shift($params);
 
         $this->with();
@@ -118,14 +133,28 @@ class Lambda extends Expression {
                 case '|' : $this->addOperator(Logical::instance(Logical::_OR_)); break;
                 case '^' : $this->addOperator(Logical::instance(Logical::_XOR_)); break;
                 case '!' : $this->addOperator(Logical::instance(Logical::_NOT_)); break;
-                case 'x' : $this->x(); break;
                 case 'p' : $this->addData(function () use ($params) {
                     return $params;
                 }); break;
                 case 'X' : $this->addData(function () {
                     return func_get_args();
                 }); break;
-                default: $this->addData($item);
+                default: {
+                    if (is_array($names)) {
+                        $offset = array_search($item, $names);
+                        if ($offset !== false) {
+                            $this->x($offset);
+                        } else {
+                            $this->addData($item);
+                        }
+                    } else {
+                        if ($item === $names) {
+                            $this->x();
+                        } else {
+                            $this->addData($item);
+                        }
+                    }
+                }
             }
         }
         $this->end();
