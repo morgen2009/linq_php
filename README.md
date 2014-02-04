@@ -10,11 +10,17 @@ At the present time the library requires PHP of the version 5.4.
 The class *Lambda* allows to build lambda expressions, anonymous functions with stored structure. The class
 creates a callable object, which can be used in LINQ methods as callable criteria, predicate or expression. Thus,
 
-    $f = Lambda::v()->add()->v()->mult(12)->gt(36);
+    $f = Lambda::define()->x()->add()->v()->mult(12)->gt(36);
 
-is equivalent to
+or
+
+    $f = Lambda::define('x+x*12>36');
+
+are equivalent to
 
     $f = function ($x) { return $x + $x*12 > 36; };
+
+but include also information about the expression structure.
 
 More information and examples will be added later. See [unit tests](tests/Qmaker/Linq).
 
@@ -27,7 +33,7 @@ The following methods are implemented
 *    Element — elementAt, elementAtOrDefault, first, firstOrDefault, last, lastOrDefault, single, singleOrDefault
 *    Equality — isEqual
 *    Filtering — ofType, where
-*    Generation — from, range, repeat
+*    Generation — from, range, repeat, empty_, defaultIfEmpty
 *    Grouping — groupBy
 *    Joining — product, join, joinOuter, groupJoin
 *    Partitioning — skip, skipWhile, take, takeWhile
@@ -35,12 +41,12 @@ The following methods are implemented
 *    Quantifier — all, any, contains
 *    Set — distinct, intersect, except, union
 *    Sorting — orderBy, orderByDescending, thenBy, thenByDescending, reverse, order
-*    Others — toArray, toList, each
+*    Others — toArray, toList, asEnumerable, toLookup, toDictionary, each
 
-The suited types for the source in the corresponding methods (like *from*) are **array**, **\Iterator**, **\IteratorAggregate** or **callable** variable.
-As an expression one can also specify **string**, **callable** variable, **array** or lambda expression **LambdaInterface**. The following example
+The suited types for the source in the corresponding methods (like *from* or *join*) are **array**, **\Iterator**, **\IteratorAggregate** or **callable** variable.
+As an expression parameter one can also specify **string**, **callable** variable, **array** or lambda expression. The following example
 
-    $f = Linq::from([1, 2, 3, 4])->where(Lambda::v()->gt(2))->sum(Lambda::v()->mult(2));
+    $f = Linq::from([1, 2, 3, 4])->where((new Lambda())->x()->gt(2))->sum((new Lambda())->x()->mult(2));
 
 will return 14. More information and examples will be added later. See [unit tests](tests/Qmaker/Linq).
 
