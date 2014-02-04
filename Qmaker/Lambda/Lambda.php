@@ -4,7 +4,7 @@ namespace Qmaker\Lambda;
 
 
 use Qmaker\Lambda\Operators\Combine;
-use Qmaker\Lambda\Operators\Parameters;
+use Qmaker\Lambda\Operators\Parameter;
 use Qmaker\Lambda\Operators\Callback;
 use Qmaker\Lambda\Operators\Comparison;
 use Qmaker\Lambda\Operators\Logical;
@@ -46,7 +46,7 @@ class Lambda extends Expression {
      * @return Lambda|mixed
      */
     public function x($i = 0) {
-        $this->addData(new Parameters($i));
+        $this->addData(new Parameter($i));
         return $this;
     }
 

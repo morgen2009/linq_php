@@ -3,7 +3,7 @@
 namespace Qmaker\Lambda\Operators;
 
 
-class Parameters {
+class Parameter {
 
     protected $offset;
 
