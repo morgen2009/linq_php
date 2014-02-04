@@ -20,7 +20,6 @@ use Qmaker\Iterators\ReverseIterator;
 use Qmaker\Iterators\SkipIterator;
 use Qmaker\Iterators\TakeIterator;
 use Qmaker\Linq\Expression\Lambda;
-use Qmaker\Linq\Expression\LambdaInterface;
 
 class Linq implements IEnumerable
 {
@@ -970,22 +969,20 @@ class Linq implements IEnumerable
 
     /**
      * Convert standard expression into lambda function
-     * @param string|array|callable|LambdaInterface $input
-     * @return LambdaInterface|callable
+     * @param string|array|callable $input
+     * @return callable
      */
     protected function expression($input) {
         if (empty($input)) {
             return $input;
         } elseif (is_string($input)) {
-            return Lambda::v($input);
+            return (new Lambda())->x()->get($input);
         } elseif (is_array($input)) {
             $self = $this;
             $input = array_map(function ($item) use ($self) {
                 return $self->expression($item);
             }, $input);
-            return Lambda::complex($input);
-        } elseif ($input instanceof LambdaInterface) {
-            return $input;
+            return (new Lambda())->complex($input);
         } elseif (is_callable($input)) {
             return $input;
         } else {

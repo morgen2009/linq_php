@@ -8,7 +8,7 @@ use Qmaker\Linq\Linq;
 class LinqLambda extends Linq {
 
     /**
-     * @var LambdaInstance
+     * @var Lambda
      */
     protected $lambda;
 
@@ -19,9 +19,9 @@ class LinqLambda extends Linq {
 
     /**
      * Constructor
-     * @param LambdaInstance $lambda
+     * @param Lambda $lambda
      */
-    public function __construct(LambdaInstance $lambda) {
+    public function __construct(Lambda $lambda) {
         $this->lambda = $lambda;
         $this->input = new VariableIterator();
         parent::__construct(function () {
@@ -33,7 +33,7 @@ class LinqLambda extends Linq {
      * @see IEnumerable::aggregate
      * @param callable(@param $iterator, @return init) $accumulate
      * @param callable(@param $item, @param $result, @return $result)|null $init
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function aggregate(callable $accumulate, callable $init = null)
     {
@@ -43,7 +43,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::average
      * @param mixed $expression
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function average($expression = null)
     {
@@ -53,7 +53,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::count
      * @param mixed $expression
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function count($expression = null)
     {
@@ -63,7 +63,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::max
      * @param mixed $expression
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function max($expression = null)
     {
@@ -73,7 +73,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::min
      * @param mixed $expression
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function min($expression = null)
     {
@@ -83,7 +83,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::sum
      * @param mixed $expression
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function sum($expression = null)
     {
@@ -92,7 +92,7 @@ class LinqLambda extends Linq {
 
     /**
      * @see IEnumerable::first
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function first()
     {
@@ -102,7 +102,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::firstOrDefault
      * @param string $default
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function firstOrDefault($default = null)
     {
@@ -111,7 +111,7 @@ class LinqLambda extends Linq {
 
     /**
      * @see IEnumerable::last
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function last()
     {
@@ -121,7 +121,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::lastOrDefault
      * @param string $default
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function lastOrDefault($default = null)
     {
@@ -130,7 +130,7 @@ class LinqLambda extends Linq {
 
     /**
      * @see IEnumerable::single
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function single()
     {
@@ -140,7 +140,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::singleOrDefault
      * @param string $default
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function singleOrDefault($default = null)
     {
@@ -150,7 +150,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::elementAt
      * @param int $position
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function elementAt($position)
     {
@@ -161,7 +161,7 @@ class LinqLambda extends Linq {
      * @see IEnumerable::elementAtOrDefault
      * @param int $position
      * @param string $default
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function elementAtOrDefault($position, $default = null)
     {
@@ -172,7 +172,7 @@ class LinqLambda extends Linq {
      * @see IEnumerable::isEqual
      * @param \Iterator|array|callable|\Qmaker\Linq\IEnumerable $source
      * @param callable|null $comparator
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function isEqual($source, callable $comparator = null)
     {
@@ -182,7 +182,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::defaultIfEmpty
      * @param mixed $default
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function defaultIfEmpty($default = null)
     {
@@ -192,7 +192,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::all
      * @param mixed $expression
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function all($expression)
     {
@@ -202,7 +202,7 @@ class LinqLambda extends Linq {
     /**
      * @see IEnumerable::any
      * @param mixed $expression
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function any($expression)
     {
@@ -213,7 +213,7 @@ class LinqLambda extends Linq {
      * @see IEnumerable::contains
      * @param callable $comparator
      * @param mixed $element
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     public function contains($element, callable $comparator = null)
     {
@@ -223,7 +223,7 @@ class LinqLambda extends Linq {
     /**
      * @param string $name
      * @param array $arguments
-     * @return mixed|LambdaInstance
+     * @return mixed|Lambda
      */
     protected function apply($name, array $arguments = [])
     {

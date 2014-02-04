@@ -3,28 +3,31 @@
 namespace Qmaker\Linq\Expression;
 
 
-/**
- * Class Lambda
- *
- * @method static \Qmaker\Linq\Expression\LambdaInstance|mixed v($path = null)
- * @method static \Qmaker\Linq\Expression\LambdaInstance|mixed c($value)
- * @method static \Qmaker\Linq\Expression\LambdaInstance|mixed i()
- * @method static \Qmaker\Linq\Expression\LambdaInstance|mixed with()
- * @method static \Qmaker\Linq\Expression\LambdaInstance|mixed complex(array $value)
- */
-class Lambda {
-    protected function __construct()
-    {
+use Qmaker\Lambda\Lambda as BaseLambda;
+
+class Lambda extends BaseLambda {
+    /**
+     * Add iterator into expression
+     * @return Lambda|mixed
+     */
+    public function i() {
+        $this->x(1);
+        return $this;
     }
 
-    static public function __callStatic($name, $arguments)
+    /**
+     * Transform the current value into IEnumerable
+     * @return LinqLambda
+     */
+    public function linq() {
+        return new LinqLambda($this);
+    }
+
+    /**
+     * @see Qmaker\Lambda\Lambda::__invoke
+     */
+    function __invoke($value, \Iterator $iterator = null)
     {
-        $result = new LambdaInstance();
-
-        if (array_search($name, ['v', 'c', 'i', 'complex', 'with']) !== false || function_exists($name)) {
-            return call_user_func_array([$result, $name], $arguments);
-        }
-
-        return $result->get($name);
+        return parent::__invoke($value, $iterator);
     }
 }
