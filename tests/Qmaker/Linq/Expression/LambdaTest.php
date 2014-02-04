@@ -25,9 +25,6 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
     public function testPathOperation()
     {
         $cars = CarExample::cars();
-        $l = Lambda::define()->v('price');
-        $this->assertEquals(16000, $l($cars[0]));
-
         $l = Lambda::define()->x()->get('price');
         $this->assertEquals(16000, $l($cars[0]));
 
@@ -38,9 +35,9 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
     public function testComplex()
     {
         $l = Lambda::define()->complex([
-            'x1' => Lambda::define()->x(),
-            'x2' => Lambda::define()->x()->mult(2),
-            'x3' => Lambda::define()->c(1)
+            'x1' => Lambda::define('x'),
+            'x2' => Lambda::define('2*x'),
+            'x3' => Lambda::define(1)
         ]);
         $this->assertEquals([ 'x1'=>1.5, 'x2'=>3.0, 'x3'=>1 ], $l(1.5));
     }
