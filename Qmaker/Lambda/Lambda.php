@@ -34,9 +34,9 @@ class Lambda extends Expression {
     public static function define($names = null, $expression = null)
     {
         if (empty($names)) {
-            return new Lambda();
+            return new self();
         } else {
-            return (new Lambda())->math($names, $expression);
+            return (new self())->math($names, $expression);
         }
     }
 

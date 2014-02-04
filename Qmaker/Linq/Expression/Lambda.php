@@ -7,6 +7,18 @@ use Qmaker\Lambda\Lambda as BaseLambda;
 
 class Lambda extends BaseLambda {
     /**
+     * @see Qmaker\Lambda\Lambda::define
+     */
+    public static function define($names = null, $expression = null)
+    {
+        if (empty($names)) {
+            return new self();
+        } else {
+            return (new self())->math($names, $expression);
+        }
+    }
+
+    /**
      * Add iterator into expression
      * @return Lambda|mixed
      */
