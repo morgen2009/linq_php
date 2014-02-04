@@ -29,20 +29,15 @@ use Qmaker\Lambda\Operators\Path;
 class Lambda extends Expression {
 
     /**
-     * @return Lambda
-     * @deprecated
-     */
-    public static function init()
-    {
-        return new Lambda();
-    }
-
-    /**
      * @see Qmaker\Lambda\Lambda::math
      */
     public static function define($names = null, $expression = null)
     {
-        return (new Lambda())->math($names, $expression);
+        if (empty($names)) {
+            return new Lambda();
+        } else {
+            return (new Lambda())->math($names, $expression);
+        }
     }
 
     /**
@@ -75,8 +70,7 @@ class Lambda extends Expression {
         $this->with();
         foreach ($value as $field => $item) {
             $this->addData($item);
-            $this->addData($field);
-            $this->addOperator(Combine::instance());
+            $this->next($field);
         }
         $this->end();
 
@@ -88,7 +82,7 @@ class Lambda extends Expression {
      * @param callable $callback
      * @return Lambda|mixed
      */
-    public function call(callable $callback) {
+    public function apply(callable $callback) {
         $this->addOperator(new Callback($callback));
         return $this;
     }
@@ -102,7 +96,7 @@ class Lambda extends Expression {
      */
     public function math($names, $expression = null) {
         $params = func_get_args();
-        if ($expression === null) {
+        if (empty($expression)) {
             $expression = $names;
             $names = 'x';
 
@@ -124,7 +118,7 @@ class Lambda extends Expression {
                 case '**': $this->addOperator(Math::instance(Math::POWER)); break;
                 case '(' : $this->with(); break;
                 case ')' : $this->end(); break;
-                case ',' : $this->comma(); break;
+                case ',' : $this->next(); break;
                 case '.' : $this->addOperator(new Path()); break;
                 case '>=': $this->addOperator(Comparison::instance(Comparison::_GE_)); break;
                 case '<=': $this->addOperator(Comparison::instance(Comparison::_LE_)); break;
@@ -196,7 +190,7 @@ class Lambda extends Expression {
      * @param string $path
      * @return Lambda|mixed
      */
-    public function item($path) {
+    public function get($path) {
         $this->addOperator(new Path());
         $this->addData($path);
         return $this;
@@ -204,9 +198,11 @@ class Lambda extends Expression {
 
     /**
      * Compute the next element
+     * @param string $name
      * @return Lambda|mixed
      */
-    public function comma() {
+    public function next($name = null) {
+        $this->addData($name);
         $this->addOperator(Combine::instance());
         return $this;
     }
@@ -238,7 +234,7 @@ class Lambda extends Expression {
                 if (function_exists($name)) {
                     $operator = new Callback($name);
                 } else {
-                    return $this->item($name);
+                    return $this->get($name);
                 }
             }
         }

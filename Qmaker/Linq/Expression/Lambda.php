@@ -25,6 +25,6 @@ class Lambda {
             return call_user_func_array([$result, $name], $arguments);
         }
 
-        return $result->item($name);
+        return $result->get($name);
     }
 }

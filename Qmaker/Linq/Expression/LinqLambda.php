@@ -227,7 +227,7 @@ class LinqLambda extends Linq {
      */
     protected function apply($name, array $arguments = [])
     {
-        return $this->lambda->call(function ($value) use ($name, $arguments) {
+        return $this->lambda->apply(function ($value) use ($name, $arguments) {
             $this->input->setInnerIterator($value);
             return $this->callParentMethod($name, $arguments);
         });

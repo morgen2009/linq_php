@@ -28,7 +28,7 @@ class LambdaTest extends \PHPUnit_Framework_TestCase {
         $l = Lambda::v('price');
         $this->assertEquals(16000, $l($cars[0]));
 
-        $l = Lambda::v()->item('price');
+        $l = Lambda::v()->get('price');
         $this->assertEquals(16000, $l($cars[0]));
 
         $l = Lambda::v()->getPrice();

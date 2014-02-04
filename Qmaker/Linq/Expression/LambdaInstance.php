@@ -14,7 +14,7 @@ class LambdaInstance extends BaseLambda implements LambdaInterface {
     public function v($path = null) {
         $this->x(0);
         if (!empty($path)) {
-            $this->item($path);
+            $this->get($path);
         }
         return $this;
     }

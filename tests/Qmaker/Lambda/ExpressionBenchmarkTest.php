@@ -11,9 +11,9 @@ class ExpressionBenchmarkTest extends \PHPUnit_Framework_TestCase {
         $m1_1 = memory_get_usage();
         $f1 = ExpOld\Lambda::v()->add(1);
         $m2 = memory_get_usage();
-        $f2 = ExpNew\Lambda::init()->x()->add(1);
+        $f2 = ExpNew\Lambda::define()->x()->add(1);
         $m2_1 = memory_get_usage();
-        $f2 = ExpNew\Lambda::init()->x()->add(1);
+        $f2 = ExpNew\Lambda::define()->x()->add(1);
         $m3 = memory_get_usage();
 
         $memory = [
@@ -28,7 +28,7 @@ class ExpressionBenchmarkTest extends \PHPUnit_Framework_TestCase {
 
     public function testSpeed() {
         $f1 = ExpOld\Lambda::v()->add(1); // x -> x+1
-        $f2 = ExpNew\Lambda::init()->x()->add(1);
+        $f2 = ExpNew\Lambda::define()->x()->add(1);
         $f3 = function ($x) { return $x+1; };
 
         $cnt = 10000;
